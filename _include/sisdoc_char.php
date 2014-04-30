@@ -1,36 +1,277 @@
 <?php
 /**
-* Esta classe Ã© a responsÃ¡vel pela conexÃ£o com o banco de dados.
+* Esta classe é a responsável pela conexão com o banco de dados.
 * @author Rene F. Gabriel Junior <rene@sisdoc.com.br>
-* @version 0.14.17
-* @copyright Copyright Â© 2011, Rene F. Gabriel Junior.
+* @version 0.14.15
+* @copyright Copyright © 2011, Rene F. Gabriel Junior.
 * @access public
 * @package INCLUDEs
 * @subpackage sisdoc_char
 */
 
-function nwin($link='',$w=200,$h=50,$resize=1,$scroll=0)
+///////////////////////////////////////////
+// Versão atual           //    data     //
+//---------------------------------------//
+// v0.14.15					  12/04/2014 // FMT
+// v0.11.34					  23/08/2011 // charConv para acentos ISO
+// 0.0f                       06/07/2011 // SPlitX
+// 0.0e                       05/07/2011 // Mst_Hexa
+// 0.0d                       22/10/2010 // DV
+// 0.0d                       20/10/2010 // customError e chkmd5
+// 0.0c                       19/09/2010 // checkpost; checkform
+// 0.0b                       28/08/2008 //
+// 0.0a                       20/05/2008 //
+///////////////////////////////////////////
+if ($mostar_versao == True) { array_push($sis_versao,array("sisDOC (Char)","0.0a",20080520)); }
+
+if (strlen($include) == 0) { exit; }
+/** Define o time zone, opcional para alguns servidores; */
+//date_default_timezone_set('UTC'); 
+/**/
+set_error_handler("customError"); 
+
+/*
+ * function nocr
+ * @para $text
+ * @return $text
+ */
+function newwin($link,$szh=50,$szv=50)
 	{
-		$sx = 'onclick="NewWindow=window.open(\'.$link.\',\'newwin\',\'scrollbars=no,resizable=no,width='+$w+',height='+$h+',top=10,left=10\'); NewWindow.focus(); void(0);} "';
+		if ($szh < 50) { $szh = 50; }
+		if ($szv < 20) { $szv = 20; }
+		$sx = '<A HREF="javascript:newxy3(';
+		$sx .= "'".$link."',".$szh.",".$szv.");";
+		$sx .= '">';
 		return($sx);
 	}
+function nocr($text)
+	{
+		$text = troca($text,chr(13),'¢¢¢');
+		$text = troca($text,chr(10),'');
+		$text = troca($text,'.¢¢¢','.'.chr(13));
+		$text = troca($text,'!¢¢¢','!'.chr(13));
+		$text = troca($text,'?¢¢¢','?'.chr(13));
+		$text = troca($text,'¢¢¢',' ');
+		return($text);
+	}
+/**
+ * Função de formatação em padrão Brasileiro
+ */
+function fmt($vlr,$dec=2)
+	{
+		$fff = number_format($vlr,$dec);
+		$fff = troca($fff,',',';');
+		$fff = troca($fff,'.',',');
+		$fff = troca($fff,';','.');
+		return($fff);
+	}
 
+/** 
+* Função para formatar número
+* Esta função está vinculada a biblioteca sisdoc_row.php
+*/
+////////////////////////////////////////
+function url_exists($url){
+        $url = str_replace("http://", "", $url);
+        if (strstr($url, "/")) {
+            $url = explode("/", $url, 2);
+            $url[1] = "/".$url[1];
+        } else {
+            $url = array($url, "/");
+        }
 
+        $fh = fsockopen($url[0], 80);
+        if ($fh) {
+            fputs($fh,"GET ".$url[1]." HTTP/1.1\nHost:".$url[0]."\n\n");
+            if (fread($fh, 22) == "HTTP/1.1 404 Not Found") { return FALSE; }
+            else { return TRUE;    }
+
+        } else { return FALSE;}
+    }
+////////////////////////////////////////	
+function format_fld($zq1,$zq2)
+	{
+		global $hd,$LANG;
+		$zqr = '';
+		if (strlen($zq2) > 0)
+			{
+			if (substr($zq2,0,1) == '(') 
+				{ 
+					$zqr = substr($zq2,strpos($zq2,$zq1.':')+2,100); 
+//					echo '['.strpos($zq2,$zq1.':').']';
+					if (strpos($zqr,'&') > 0) { $zqr = substr($zqr,0,strpos($zqr,'&')); }
+					$zqr = $zq1.'-'.$zqr;
+				}
+				
+			
+			////////////////////// $
+			if ($zq2 == '$') { $zqr =  Number_format($zq1/100,2); }
+			////////////////////// $R
+			if (($zq2 == '$R') or ($zq2 == '2'))
+			{
+				 $zqr =  Number_format($zq1,2);
+				 if ($LANG == 'en_US')
+				 	{ $zqr = $zqr;} 
+				 if (($LANG == 'pt_BR') or ($zq2 == '2'))
+				 	{ $zqr = troca(troca(troca($zqr,'.','#'),',','.'),'#','.'); }
+			}
+			////////////////////// #
+			if (substr($zq2,0,1) == '#') 
+				{ $zqr =  '<CENTER>';
+				$zqr = $zqr . $zq1; }
+			////////////////////// @
+			if ($zq2 == 'SHORT') 
+				{ 
+				$zqr = $zqr . SubStr($zq1,0,1).LowerCase(SubStr($zq1,1,strpos($zq1,' '))); 
+				}
+			if ($zq2 == '@') 
+				{ $zqr =  UpperCase(SubStr($zq1,0,1));
+				if (substr($zq1,1,1) == ' ') { $zqr = $zqr . '&nbsp;'; }
+				$zqr = $zqr . LowerCase(SubStr($zq1,1,200)); }
+			////////////////////// Bold
+			if ($zq2 == 'B') ////// BOLD
+				{$zqr = $zqr .'<B>'.$zq1.'</B>'; }
+			////////////////////// CB				
+			if ($zq2 == 'CB') 
+				{ $varf=$vars[$varf];
+				$vvvt = '';
+				$vvvt = $vars['chk'.$zq1];
+				if ($vvvt=="1") { $vvvt = "checked"; }
+				$zqr = $zqr . '<input type="checkbox" name="chk'.$zq1.'" '.$vvvt.' value="1">'; }	
+			////////////////////// CEP				
+			if ($zq2 == 'CEP') ////// CEP
+				{ 
+				$xxcep = sonumero($zq1);
+				if (strlen($xxcep)==8) { $xxcep=substr($xxcep,0,2).'.'.substr($xxcep,2,3).'-'.substr($xxcep,5,3); }
+				$zqr =  $zqr . $xxcep; 
+				}
+			////////////////////// D
+			if ($zq2 == 'D') 
+				{ $zqr =  '<CENTER>';
+				$dta = trim($zq1);
+				if ($dta == '19000101') { $zqr = $zqr . '-'; }
+				else { $zqr = $zqr . stodbr($zq1); } }
+			////////////////////// DR
+			if ($zq2 == 'DR') 
+				{ 
+				$zqr =  '<CENTER>';
+				$dta = trim($zq1);
+				if ($dta == '19000101') { $zqr = $zqr . '-'; }
+				else { $zqr = $zqr . substr(stodbr($zq1),0,5); }
+				}					
+			////////////////////// H
+			if ((substr($zq2,0,1) == 'H') and ($zq2 != 'H1') and ($zq2 != 'H2'))
+				{ 
+				$zqr = '';
+				if ($hd != trim($zq1))
+					{ 
+					$zq1v = $zq1;
+					if (substr($zq2,1,1) =='D') { $zq1v = stodbr($zq1); }
+//					$zqr .= '<TR><TD colspan="15" height="1" bgcolor="#c0c0c0"></TD></TR>';
+					$zqr .= '<TR><TD  bgcolor="#FFFFFF" colspan="15" class="lt2" align="left"><HR size="1"><B>'.$zq1v.'</TD></TR>';
+					$hd = trim($zq1);
+					$zqr = $zqr . '<TR '.coluna().'><TD></TD>';
+					}
+				} 
+			if ($zq2 == 'H1') ////// ENFATIZADO
+				{$zqr = $zqr .'<h1>'.$zq1.'</h1>'; }
+			if ($zq2 == 'H2') ////// ENFATIZADO
+				{$zqr = $zqr .'<h2>'.$zq1.'</h2>'; }				
+			////////////////////// Italic
+			if ($zq2 == 'I') ////// ITALIC
+				{$zqr = $zqr .'<I>'.$zq1.'</I>'; }
+
+			if ($$zq2 == 'NL') ////// Nova Linha
+				{ $zqr = $zqr . '<TR '.$xcol.'><TD><TD>'.$linkv.$zq1; }
+			if ($zq2 == 'SHORT') 
+				{ $zqr = $zqr . LowerCase(SubStr($zq1,1,strpos($zq1,' '))); }
+			////////////////////// SN
+			if ($zq2 == 'SN') 
+				{ 
+				$zqr =  '<CENTER>';
+				$dta = trim($zq1);
+				if (($dta == '1') or ($dta == true) or ($dta=='S')) { $zqr = $zqr . 'SIM'; }
+				else { $zqr = $zqr . 'NAO'; }
+				}					
+			if ($zq2 == 'Z') 
+				{ 
+				$zqr =  '<CENTER>';
+				$zqr = $zqr .  strzero($zq1,'0'.substr($zq2,1,2)); 
+				}							
+			} else { $zqr =  $zq1; }	
+			return($zqr);
+	}
+function page()
+	{
+	$page = $_SERVER['SCRIPT_NAME'];
+	while ($pos = strpos(' '.$page,'/'))
+		{ $page = substr($page,$pos,strlen($page)); }
+	return($page);
+	}
+	
+function splitx($in,$string)
+	{
+	$string .= $in;
+	$vr = array();
+	while (strpos(' '.$string,$in))
+		{
+		$vp = strpos($string,$in);
+		$v4 = trim(substr($string,0,$vp));
+		$string = trim(substr($string,$vp+1,strlen($string)));
+		if (strlen($v4) > 0)
+			{ array_push($vr,$v4); }
+		}
+	return($vr);
+	}
+
+function nr_format($vr,$vs)
+	{
+	$vrr = number_format($vr,$vs);
+	$vrr = troca($vrr,',','#');
+	$vrr = troca($vrr,'.',',');
+	$vrr = troca($vrr,'#','.');
+	return($vrr);
+	}
+
+function dv($nrv)
+	{
+	$to = 0;
+	$nrv = trim(sonumero($nrv));
+	$trv = round(strlen($nrv));
+	for ($tr=0;$tr < $trv;$tr++)
+		{
+		$ttr1 = ($tr/2);
+		$ttr2 = round($tr/2);
+		if ($ttr1 == $ttr2)
+			{ $to = $to + round(substr($nrv,$tr,1)); }
+			else
+			{ $to = $to + round(substr($nrv,$tr,1))*7; }
+		}
+	while ($to > 10) { $to = $to - 10; }
+	return($to);
+	}
+
+function chkmd5($dq)
+	{
+	global $secu;
+		return(md5($dp.$secu));
+	}
+	
 function customError($errno, $errstr, $errfile, $errline, $errcontext)
   {
   global $secu,$base,$base_name,$user_log,$debug,$ttsql,$rlt,$sql_query;
   if ($errno != '8')
   		{
-		$email = 'brapcici@gmail.com';
+		$email = 'rene@fonzaghi.com.br';
 		$tee = '<table width="600" bordercolor="#ff0000" border="3" align="center">';
 		$tee .= '<TR><TD bgcolor="#ff0000" align="center"><FONT class="lt2"><FONT COLOR=white><B>ERRO  -['.$base.']-'.$base_name.'-</B></TD></TR>';
 		$tee .= '<TR><TD align="center"><B><TT>';
-		$tee .= 'Erro NÃºmero #'.$errno;
+		$tee .= 'Erro Número #'.$errno;
 		$tee .= '<TR><TD><TT>';
 		$tee .= '<BR>Remote Address: '.$_SERVER['REMOTE_ADDR'];
 		$tee .= '<BR>Metodo: '.$_SERVER['REQUEST_METHOD'];
-		$tee .= '<BR>Nome da pÃ¡gina: '.$_SERVER['SCRIPT_NAME'];
-		$tee .= '<BR>DomÃ­nio: '.$_SERVER['SERVER_NAME'];
+		$tee .= '<BR>Nome da página: '.$_SERVER['SCRIPT_NAME'];
+		$tee .= '<BR>Domínio: '.$_SERVER['SERVER_NAME'];
 		$tee .= '<BR>Data: '.date("d/m/Y H:i:s");
 		
 		if (strlen(trim($user_log)) > 0) { $tee .= '<TR><TD><TT>'; $tee .= 'User: '.$user_log; }
@@ -52,10 +293,10 @@ function customError($errno, $errstr, $errfile, $errline, $errcontext)
 		
 		$tee .= '</table>';
 		if ($debug == 1) { echo $tee; }
-//		if ($debug == 3) { echo 'Muitas conexÃµes, aguarde....'; }
+//		if ($debug == 3) { echo 'Muitas conexões, aguarde....'; }
 		
-	
-		$headers .= 'To: Brapci (Monitoramento) <brapcici@gmail.com>' . "\r\n";
+		$headers = '';	
+		$headers .= 'To: Rene (Monitoramento) <rene@fonzaghi.com.br>' . "\r\n";
 		$headers .= 'From: BancoSQL (PG) <rene@sisdoc.com.br>' . "\r\n";
 		$headers .= 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";		
@@ -66,75 +307,40 @@ function customError($errno, $errstr, $errfile, $errline, $errcontext)
 		}
   } 
 
-////////////////////////////////////////
-function redireciona($pg) { redirecina($pg); }
-function redirecina($pg)
-	{
-	header("Location: ".$pg);
-	echo 'Stoped'; exit;
-	}
-
-
 function checkpost($_P)
 	{
 	global $secu;
 	$chkp = substr(md5($_P.$secu),5,10);
 	return($chkp);
 	}
-	
-function dv($nrv)
+function checkform()
 	{
-	$to = 0;
-	$nrv = trim(sonumero($nrv));
-	$trv = round(strlen($nrv));
-	for ($tr=0;$tr < $trv;$tr++)
-		{
-		$ttr1 = ($tr/2);
-		$ttr2 = round($tr/2);
-		if ($ttr1 == $ttr2)
-			{ $to = $to + round(substr($nrv,$tr,1)); }
-			else
-			{ $to = $to + round(substr($nrv,$tr,1))*7; }
-		}
-	while ($to > 10) { $to = $to - 10; }
-	return($to);
+	global $dd,$secu;
+	$chkp = substr(md5($dd[0].$secu),5,10);
+	if ($chkp == $dd[90]) 
+		{ return( 1 ); } 
+	else { 
+		$msg="Erro na transmissão dos dados, tente novamente";
+		echo '<CENTER><BR><BR>';
+		echo msg_erro($msg);
+		$msg = '';
+		return( 0 ); 
 	}
-function splitx($in,$string)
+	}
+function redirecina($pg)
 	{
-	$string .= $in;
-	$vr = array();
-	while (strpos(' '.$string,$in))
-		{
-		$vp = strpos($string,$in);
-		$v4 = trim(substr($string,0,$vp));
-		$string = trim(substr($string,$vp+1,strlen($string)));
-		if (strlen($v4) > 0)
-			{ array_push($vr,$v4); }
-		}
-	return($vr);
+	header("Location: ".$pg);
+	echo 'Stoped'; exit;
 	}
-
-function fmt($vlr=0,$dec=0)
+function numberformat($vlr,$nc)
 	{
-		if ($vlr == 0) { return('&nbsp;'); }
-		$sx = number_format($vlr,$dec,',','.');
-		return($sx);
+	$nv = number_format($vlr,$nc);
+	$nv = troca($nv,'.','#');
+	$nv = troca($nv,',','.');
+	$nv = troca($nv,'#',',');
+	if ($nv == '0,00') { $nv = '<CENTER>-</CENTER>'; }
+	return($nv);
 	}
-function fmt_data($data)
-	{
-		$data = round($data);
-		if ($data < 19100000) { return(""); }
-		$data = substr($data,6,2).'/'.substr($data,4,2).'/'.substr($data,0,4);
-		return($data);
-	}
-function strzero($ddx,$ttz)
-	{
-	$ddx = round($ddx);
-	while (strlen($ddx) < $ttz)
-		{ $ddx = "0".$ddx; }
-	return($ddx);
-	}
-
 function sonumero($it)
 	{
 	$rlt = '';
@@ -143,25 +349,57 @@ function sonumero($it)
 		$ord = ord(substr($it,$ki,1));
 		if (($ord >= 48) and ($ord <= 57)) { $rlt = $rlt . substr($it,$ki,1); }
 		}   
+//$rlt = round($rlt); 
+//	if ($rlt > 256*256*256) { $rlt = -1; }
 	return $rlt;
 	}
 
-function page()
+function dsp_sn($y)
 	{
-	$page = $_SERVER['SCRIPT_NAME'];
-	while ($pos = strpos(' '.$page,'/'))
-		{ $page = substr($page,$pos,strlen($page)); }
-	return($page);
+	global $LANG;
+	$SIM = "SIM"; $NAO = 'NÃO';
+	if ($LANG == 'en') { $SIM = 'YES'; $NAO = 'NO'; }
+	$yy = $NAO;
+	if ($y=='1') { $yy = $SIM; }
+	if ($y=='S') { $yy = $SIM; }
+	return($yy);	
+	}
+function strzero($ddx,$ttz)
+	{
+	$ddx = round($ddx);
+	while (strlen($ddx) < $ttz)
+		{ $ddx = "0".$ddx; }
+	return($ddx);
 	}
 	
-function troca($qutf,$qc,$qt)
+function mst($ddx)
 	{
-	if (is_array($qutf))
+	$ddx = troca($ddx,chr(13),'<BR>');
+	return($ddx);
+	}
+
+function mst_hexa($ddx)
+	{
+	$ddr = '';
+	$ddi = '';
+	$dda = '<TT>';
+	$rrow = 0;
+	for ($rt = 0;$rt < strlen($ddx);$rt++)
 		{
-			print_r($qutf);
-			exit;
+		$ddr .= bin2hex(substr($ddx,$rt,1)).' ';
+		$ddi .= substr($ddx,$rt,1).'&nbsp;';
+		$rrow++;
+		if ($rrow > 7)
+			{
+				$dda .= $ddr.'&nbsp;'.$ddi.'<BR>';
+				$ddr = '';
+				$ddi = '';
+				$rrow = 0;
+			}
 		}
-	return(str_replace(array($qc), array($qt),$qutf));
+	$dda .= $ddr.'&nbsp;'.$ddi.'<BR>';
+	$dda .= '<HR>'.mst($ddx);
+	return($dda);
 	}
 	
 function charConv($ddx)
@@ -473,6 +711,10 @@ function LowerCaseSQL($d)
 		 
 	$d = strtolower($d);
 	return $d;
+	}		
+	
+function troca($qutf,$qc,$qt)
+	{
+	return(str_replace(array($qc), array($qt),$qutf));
 	}
-
 ?>
