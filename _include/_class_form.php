@@ -33,9 +33,6 @@ class form
 		var $rq = '';
 		var $readonly=0;	
 		var $fieldset='';
-		/* Classe */
-		var $class='';
-		var $class_memo;
 		
 		/* Valores */
 		var $value='';
@@ -50,6 +47,13 @@ class form
 		var $required_message = 1;
 		var $required_message_post = 1;		
 		var $saved = 0;
+
+		/* Stlye */
+		var $class_string='';
+		var $class_password='';
+		var $class_textbox = '';
+		var $class_button_submit = '';
+		var $class_memo = '';
 
 		/**
 		 * �ndice de $cp onde se encontram par�metros (opcionais) de um tipo
@@ -157,7 +161,7 @@ class form
 				$this->saved = 1;
 				$this->rq = '';
 				$sx .= '<form id="formulario" method="post" action="'.$post.'">'.chr(13);
-				$sh .= '<table class="tabela00" width="100%">'.chr(13);
+				$sh .= '<table class="'.$this->class_form_standard.'" width="100%">'.chr(13);
 				
 				for ($r=0;$r < count($cp);$r++)
 					{
@@ -632,7 +636,7 @@ class form
 				$sx = '
 				<input 
 					type="submit" name="acao" value="'.$this->caption.'" 
-					id="'.$this->name.'" class="bottom_submit" />';
+					id="'.$this->name.'" class="'.$this->class_button_submit.'" />';
 				return($sx);
 			}
 		/***
@@ -678,7 +682,7 @@ class form
 				<input 
 					type="text" name="'.$this->name.'" size="13"
 					value = "'.$this->value.'"
-					maxlength="10" '.$this->class.' 
+					maxlength="10" class="'.$this->class_textbox.'" 
 					id="'.$this->name.'"
 					'.$msk.' />&nbsp;';
 				$sx .= $this->requerido();
@@ -804,7 +808,7 @@ class form
 		function type_M()
 			{
 				global $include,$acao;
-				$sx ='<TR><TD colspan=2 '.$this->class_memo.'>';
+				$sx ='<TR><TD colspan=2 class="'.$this->class_memo.'">';
 				$sx .= $this->caption;
 				return($sx);				
 			}			
@@ -874,7 +878,7 @@ class form
 				<input 
 					type="text" name="'.$this->name.'" 
 					value = "'.$this->value.'"
-					maxlength="'.$this->maxlength.'" '.$this->class.' '.$style.' 
+					maxlength="'.$this->maxlength.'" class="'.$this->class_string.'" '.$style.' 
 					id="'.$this->name.'" />'.chr(13);
 				$sx .= $this->requerido();
 				return($sx);
@@ -915,7 +919,7 @@ class form
 				<input 
 					type="password" name="'.$this->name.'" 
 					value = "'.$this->value.'"
-					maxlength="'.$this->maxlength.'" '.$this->class.' '.$style.' 
+					maxlength="'.$this->maxlength.'" class="'.$this->class_password.'" '.$style.' 
 					autocomplete="off"
 					id="'.$this->name.'" />'.chr(13);
 				$sx .= $this->requerido();
