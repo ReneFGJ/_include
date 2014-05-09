@@ -10,7 +10,7 @@
     */
 
 if(!isset($LANG) || $LANG == ''){ $LANG = 'pt_BR'; }
-//XXX Idealmente, daria para testar com file_get_contents(filename) para ver se o arquivo de localiza��o do datepicker 
+/*Idealmente, daria para testar com file_get_contents(filename) para ver se o arquivo de localiza��o do datepicker 
 //	existe antes de puxar ele aqui (e carregando jquery.ui.datepicker-pt-BR.js caso n�o exista)
 
 //echo '
@@ -22,7 +22,7 @@ if(!isset($LANG) || $LANG == ''){ $LANG = 'pt_BR'; }
 //		<link rel="stylesheet" href="'.$http.'include/css/calender_data.css" type="text/css" media="screen" />
 //		<link rel="stylesheet" href="'.$http.'include/css/style_keyword_form.css" type="text/css" media="screen" />
 //	';
-
+*/
 class form
 	{
 		var $size=10;
@@ -141,7 +141,6 @@ class form
 				/**
 				 * Recupera informacoes do arquivo
 				 */
-				$recupera = 0;
 				if ((strlen($filename) > 0) and
 						($file == 1) and 
 						(strlen($acao)==0))

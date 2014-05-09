@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-<<<<<<< HEAD
-	<name>Include</name>
-=======
 	<name>_include</name>
->>>>>>> 2656a65c202b6aa79f7c73605c25b7a35f4ecd3b
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
+		<buildCommand>
+			<name>com.aptana.editor.php.aptanaPhpBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>com.aptana.ide.core.unifiedBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
-<<<<<<< HEAD
 		<nature>com.aptana.editor.php.phpNature</nature>
-=======
->>>>>>> 2656a65c202b6aa79f7c73605c25b7a35f4ecd3b
+		<nature>com.aptana.projects.webnature</nature>
 	</natures>
 </projectDescription>
