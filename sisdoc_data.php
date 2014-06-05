@@ -26,20 +26,14 @@ if ($mostar_versao == True) {array_push($sis_versao,array("sisDOC (Data/Hora)","
 if (strlen($include) == 0) { exit; }
 if (strlen($sisdoc_data) == 0)
 {
-	
-/* Willian */
-function dataExt($dt,$padrao)
+/*****************willian - inicio*/	
+function dataExt($dt,$padrao) 
  //*data e padrao(br ou en)*/
 	{
-		$dt = trim($dt);
-		
-		/*verifica se a mascara*/
-		$caracter = array("/", "-",":");
-		/*exclui caracteres especiais*/
-		$dtx = str_replace($caracter,"",$dt);
-		$xtt_caracter = strlen($dtx);
-		
-		if($xtt_caracter==8){	
+
+	$dtx = sonumero($dt);
+	$dtxx = array('d'=>'','D'=>'','m'=>'','M'=>'','br'=>'','brx'=>'','en'=>'','enx'=>'');
+	if(strlen($dtx)==8){	
 			switch($padrao)
 			{
 				case 'br': /*padrao brasileiro (ddmmYYYY)*/
@@ -57,18 +51,20 @@ function dataExt($dt,$padrao)
 					return('Padrao de linguagem invalido para função ');
 					break;	
 			}
-			$dtxx['d'] = $dtxx['D'] = $diaxx;
-			$dtxx['m'] = $dtxx['M'] = $mesxx;
-			$dtxx['y'] = $dtxx['Y'] = $anoxx; 
-			$dtxx['br'] = $diaxx.$mesxx.$anoxx; 
-			$dtxx['brx'] = $diaxx.'/'.$mesxx.'/'.$anoxx;
-			$dtxx['en'] = $anoxx.$mesxx.$diaxx;
-			$dtxx['enx'] = $anoxx.'/'.$mesxx.'/'.$diaxx;
-			return($dtxx);
-		}else{
-			return('Formato de data invalido para função '.$dt.' - formatos validos (ddmmYYYY)(YYYYmmdd)(dd/mm/YYYY)(YYYY/mm/dd)(dd-mm-YYYY)(YYYY-mm-dd)');
-		}	
-	}
+		$dtxx['d'] = $dtxx['D'] = $diaxx;
+		$dtxx['m'] = $dtxx['M'] = $mesxx;
+		$dtxx['y'] = $dtxx['Y'] = $anoxx; 
+		$dtxx['br'] = $diaxx.$mesxx.$anoxx; 
+		$dtxx['brx'] = $diaxx.'/'.$mesxx.'/'.$anoxx;
+		$dtxx['en'] = $anoxx.$mesxx.$diaxx;
+		$dtxx['enx'] = $anoxx.'/'.$mesxx.'/'.$diaxx;
+		return($dtxx);
+	}else{
+		return('Formato de data invalido para funcao '.$dt.' - formatos validos (ddmmYYYY)(YYYYmmdd)(dd/mm/YYYY)(YYYY/mm/dd)(dd-mm-YYYY)(YYYY-mm-dd)');
+	}	
+    }	
+	
+/*****************willian - fim*/	
 	
 require("sisdoc_data_class.php");
 $date = new date;
