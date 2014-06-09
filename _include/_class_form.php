@@ -34,6 +34,8 @@ class form
 		var $readonly=0;	
 		var $fieldset='';
 		
+		var $form_name = "formulario";
+		
 		/* Valores */
 		var $value='';
 		var $line;
@@ -43,6 +45,7 @@ class form
 		var $rows=5;
 		var $js_valida = '';
 		var $key;
+		var $ajax = '';
 		
 		var $required_message = 1;
 		var $required_message_post = 1;		
@@ -54,6 +57,7 @@ class form
 		var $class_textbox = '';
 		var $class_button_submit = '';
 		var $class_memo = '';
+		var $class_select = '';
 
 		/**
 		 * �ndice de $cp onde se encontram par�metros (opcionais) de um tipo
@@ -160,7 +164,7 @@ class form
 				if (strlen($post)==0) { $post = page(); }
 				$this->saved = 1;
 				$this->rq = '';
-				$sx .= '<form id="formulario" method="post" action="'.$post.'">'.chr(13);
+				$sx .= '<form id="'.$this->form_name.'" method="post" action="'.$post.'">'.chr(13);
 				$sh .= '<table class="'.$this->class_form_standard.'" width="100%">'.chr(13);
 				
 				for ($r=0;$r < count($cp);$r++)
@@ -346,7 +350,6 @@ class form
 								if (($cz++)>0) {$sql = $sql . ', ';}
 								if (substr($cp[$k][0],0,2) == '$D') 
 									{
-										//echo '<BR>===>'.$dd[$k];	
 								 		$dd[$k] = brtos($dd[$k]); 
 									}
 								$sql = $sql . $cp[$k][1].'='.chr(39).$dd[$k].chr(39).' ';
@@ -394,11 +397,21 @@ class form
 				$i = UpperCaseSql(substr($cp[0],1,5));
 				if (strpos($i,' ') > 0) { $i = substr($i,0,strpos($i,' ')); }
 				$this->required = $cp[3];
+				$this->ajax = $cp[0];
 				$this->caption = $cp[2];
 				$this->fieldset = $cp[1];
 				$size = sonumero($cp[0]);
 				$this->maxlength = $size;
 				$this->caption = $cp[2];
+				$ro = UpperCaseSql($cp[4]);
+				
+				if (($ro=='FALSE') or ($ro == '0')  or (strlen($ro) == '0'))
+					{
+						$this->readonly = ' READONLY ';		
+					} else {
+						$this->readonly = '';
+					}
+				
 				
 				if ((strlen(trim($acao)) > 0) 
 						and ($this->required==1) 
@@ -428,7 +441,8 @@ class form
 					case '[':
 						$this->par = substr($cp[0],2,strlen($cp[0]));  
 						$sx .= $sh. $this->type_seq(); break;	
-
+					case 'AJAX':  $sx .= '<TR><TD colspan=2>'.$this->type_ajax(); break;
+					
 					case 'AUTOR':  $sx .= '<TR><TD colspan=2>'.$this->type_Autor(); break;	
 					/* Caption */
 					case 'A':  $sx .= '<TR><TD colspan=2>'.$this->type_A(); break;	
@@ -536,6 +550,39 @@ class form
 				return($sx);
 		 	}
 		/**
+		 * AJAX
+		 */
+		 function type_ajax()
+		 	{
+		 		global $dd;
+		 		$sx = '';
+				$s = $this->ajax;
+				$sp = strpos($s,':');
+				if ($sp > 0)
+					{
+					$page = trim(substr($s,$sp+1,strlen($s)).'.php');
+						
+		 			$sx .= '<div id="'.$this->name.'">loading...</div>'.chr(13).chr(10);
+		 			$sx .='<script>
+		 				var id = "'.$dd[0].'";
+						var name = "'.$this->name.'";
+						var acao = "ver";
+												
+		 				$.ajax({
+						type: "POST",
+						url: "'.$page.'",
+						data: { dd0:id, dd1: acao, dd2: name }
+						}).done(function( data ) {$("#'.$this->name.'").html( data ); })
+						.fail(function() { alert("ERRO LOAD PAGE '.$page.'"); });
+					  </script>
+					';
+					} else {
+						$sx .= 'Erro Ajax: page not found';
+					}
+				
+				return($sx);
+		 	}
+		/**
 		 * {
 		 */
 		 function type_close_field()
@@ -558,7 +605,7 @@ class form
 				$par = splitx('-',$par);
 				$txt = round($this->value);
 				$sx = '
-				<select name="'.$this->name.'" id="'.$this->name.'" size="1" '.$this->class.'>
+				<select name="'.$this->name.'" id="'.$this->name.'" size="1" class="'.$this->class_select.'">
 					'.$this->class.' 
 					id="'.$this->name.'" >';
 				$sx .= '<option value="">'.msg('select_option').'</option>';
@@ -858,7 +905,9 @@ class form
 					$opt .= '</option>';
 				}
 				$sx = '
-				<select name="'.$this->name.'" size="1" '.$this->class.'>
+				<select name="'.$this->name.'" size="1" clas"'.$this->class_select.'">
+				</select>
+				<select name="'.$this->name.'" size="1" clas"form_select">
 					'.$this->class.' 
 					id="'.$this->name.'" >';
 				$sx .= $opt.chr(13);
@@ -878,8 +927,11 @@ class form
 				<input 
 					type="text" name="'.$this->name.'" 
 					value = "'.$this->value.'"
-					maxlength="'.$this->maxlength.'" class="'.$this->class_string.'" '.$style.' 
-					id="'.$this->name.'" />'.chr(13);
+					maxlength="'.$this->maxlength.'" 
+					class="'.$this->class_string.'" 
+					id="'.$this->name.'"
+					'.$this->readonly.' '.$style.'
+					 />'.chr(13);
 				$sx .= $this->requerido();
 				return($sx);
 			}
@@ -891,9 +943,9 @@ class form
 				$ops = splitx('&',$this->par);
 				
 				$sx = '
-				<select name="'.$this->name.'"
-					'.$this->class.' '.$style.' 
-					id="'.$this->name.'" />'.chr(13);
+				<select name="'.$this->name.'" 
+					class="'.$this->class_select.'"
+					id="'.$this->name.'" >'.chr(13);
 				for ($r=0;$r < count($ops);$r++)
 					{
 						$so = $ops[$r];
@@ -901,7 +953,10 @@ class form
 						
 						$vl = substr($so,0,strpos($so,':'));
 						if ($this->value==$vl) { $check = 'selected'; }
-						$sx .= '<option value="'.$vl.'" '.$check.'>';
+						$sx .= '<option value="'.$vl.'" '.$check.' ';
+						if (strlen(trim($this->class_select)) > 0) 
+							{ $sx .= ' class="'.$this->class_select.'"'; }
+						$sx .= '>';
 						$sx .= trim(substr($so,strpos($so,':')+1,strlen($so)));
 						$sx .= '</option>'.chr(13);
 					}
@@ -943,7 +998,7 @@ class form
 				$gets = '
 				<script>
 					$("#'.$this->name.'").autocomplete({
-						source: "/reol/pb/ajax_instituicao.php",
+						source: "_form_ajax.php",
    						minLength: 1,
    						matchContains: true,
         				selectFirst: false
@@ -1194,7 +1249,7 @@ class form
 					';
 				}
 
-				die('Tipo de gerador de campo n�o suportado: '.$this->geradorCampoRichText);
+				die('Tipo de gerador de campo nao suportado: '.$this->geradorCampoRichText);
 			}
 
 		/**
