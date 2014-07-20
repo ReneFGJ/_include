@@ -15,7 +15,25 @@ function nwin($link='',$w=200,$h=50,$resize=1,$scroll=0)
 		return($sx);
 	}
 
-
+function ShowLink($link,$tipo='0',$target='',$label='')
+	{
+		if (strlen($target) > 0) { $tag = ' target="'.$target.'"';}
+		if (strlen($link) ==0 ) { return(''); }
+		switch($tipo)
+			{
+			case '1':
+				$lk = '<A HREF="'.$link.'" title="'.$label.'" '.$tag.'>';
+				$lk .= '<img src="'.$path.'"icone_link.png" height="16" border="0">';
+				$lk .= '</A>';
+			default:
+				$lk = '<A HREF="'.$link.'" title="'.$label.'" '.$tag.'>';
+				$lk .= $link;
+				$lk .= '</A>';
+				break; 
+			}
+		return($lk);
+	}
+	
 function customError($errno, $errstr, $errfile, $errline, $errcontext)
   {
   global $secu,$base,$base_name,$user_log,$debug,$ttsql,$rlt,$sql_query;

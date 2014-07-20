@@ -12,6 +12,7 @@
 ///////////////////////////////////////////
 // Versão atual           //    data     //
 //---------------------------------------//
+// v0.14.30                   20/07/2014 // ShowLink
 // v0.14.15					  12/04/2014 // FMT
 // v0.11.34					  23/08/2011 // charConv para acentos ISO
 // 0.0f                       06/07/2011 // SPlitX
@@ -22,7 +23,7 @@
 // 0.0b                       28/08/2008 //
 // 0.0a                       20/05/2008 //
 ///////////////////////////////////////////
-if ($mostar_versao == True) { array_push($sis_versao,array("sisDOC (Char)","0.0a",20080520)); }
+if ($mostar_versao == True) { array_push($sis_versao,array("sisDOC (Char)","0.0a",20140720)); }
 
 if (strlen($include) == 0) { exit; }
 /** Define o time zone, opcional para alguns servidores; */
@@ -30,11 +31,24 @@ if (strlen($include) == 0) { exit; }
 /**/
 set_error_handler("customError"); 
 
-/*
- * function nocr
- * @para $text
- * @return $text
- */
+function ShowLink($link,$tipo='0',$target='',$label='')
+	{
+		if (strlen($target) > 0) { $tag = ' target="'.$target.'"';}
+		if (strlen($link) ==0 ) { return(''); }
+		switch($tipo)
+			{
+			case '1':
+				$lk = '<A HREF="'.$link.'" title="'.$label.'" '.$tag.'>';
+				$lk .= '<img src="'.$path.'"icone_link.png" height="16" border="0">';
+				$lk .= '</A>';
+			default:
+				$lk = '<A HREF="'.$link.'" title="'.$label.'" '.$tag.'>';
+				$lk .= $link;
+				$lk .= '</A>';
+				break; 
+			}
+		return($lk);
+	}
 function newwin($link,$szh=50,$szv=50)
 	{
 		if ($szh < 50) { $szh = 50; }
@@ -44,6 +58,11 @@ function newwin($link,$szh=50,$szv=50)
 		$sx .= '">';
 		return($sx);
 	}
+/*
+ * function nocr
+ * @para $text
+ * @return $text
+ */
 function nocr($text)
 	{
 		$text = troca($text,chr(13),'¢¢¢');
