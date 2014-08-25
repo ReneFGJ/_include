@@ -10,21 +10,15 @@
     */
 
 if(!isset($LANG) || $LANG == ''){ $LANG = 'pt_BR'; }
-/*Idealmente, daria para testar com file_get_contents(filename) para ver se o arquivo de localiza��o do datepicker 
-//	existe antes de puxar ele aqui (e carregando jquery.ui.datepicker-pt-BR.js caso n�o exista)
 
-//echo '
-//		<script type="text/javascript" src="'.$http.'include/js/jquery-ui.js"></script>
-//		<script type="text/javascript" src="'.$http.'include/js/jquery-ui-datepicker-localisation/jquery.ui.datepicker-'.str_replace('_', '-', $LANG).'.js"></script>
-//		<script type="text/javascript" src="'.$http.'include/js/jquery.maskedit.js"></script>
-//		<script type="text/javascript" src="'.$http.'include/js/jquery.maskmoney.js"></script>
-//		<script type="text/javascript" src="'.$http.'include/js/jquery.tagsinput.js"></script>
-//		<link rel="stylesheet" href="'.$http.'include/css/calender_data.css" type="text/css" media="screen" />
-//		<link rel="stylesheet" href="'.$http.'include/css/style_keyword_form.css" type="text/css" media="screen" />
-//	';
-*/
+echo '
+		<script type="text/javascript" src="'.$include.'js/jquery.dynatree.js"></script>
+		<script type="text/javascript" src="'.$include.'js/jquery-calender_pt_BR.js"></script> 
+	';
+
 class form
 	{
+		/* Standard Fields */
 		var $size=10;
 		var $maxlength = 10;
 		var $name='';
@@ -59,25 +53,52 @@ class form
 		var $class_memo = '';
 		var $class_select = '';
 
-		/**
-		 * �ndice de $cp onde se encontram par�metros (opcionais) de um tipo
-		 *  Usado, e.g., em type_ARV() para receber a �rvore
-		 * @var integer
-		 */
-		var $indiceParams = 5;
-
-		/**
-		 * Framework a ser usado para gerar campo de rich text (ver type_RT())
-		 * @var string
-		 */
-		var $geradorCampoRichText = 'tinymce';
-
-		/**
-		 * Javascript adicional a ser executado no submit (ver type_B(), usado por type_ARV())
-		 * @var string
-		 */
-		var $jsOnSubmit='';
-		
+	/* AJAX */
+	function ajax_refresh($id,$protocolo)
+		{
+			global $http;
+			$js = '
+			var page = \''.$http.'_ajax/ajax_form.php\';
+			$.ajax({
+				type: "POST",
+				url: page,
+				data: { dd1: "'.$protocolo.'", dd91: "'.$id.'", dd2: "REFRESH" }
+			}).fail(function() {
+   					alert( "error" );
+			}).done(function( data ) {
+				$("#'.$id.'_main").html(data);
+			});			
+			';
+			$sx .= '<script>
+					'.$js.'
+					</script>';
+			return($sx);			
+		}
+	
+	function active($id,$protocolo,$verbo)
+		{
+			global $http;
+			$js = '
+			$("#'.$id.'").click(function() {
+				var page = \''.$http.'_ajax/ajax_form.php\';
+				$.ajax({
+					type: "POST",
+					url: page,
+					data: { dd1: "'.$protocolo.'", dd91: "'.$id.'", dd2: "'.$verbo.'" }
+				}).fail(function() {
+    					alert( "error" );
+				}).done(function( data ) {
+					$("#'.$id.'_field").html(data);
+				});			
+			});
+			';
+			
+			$sx .= '<script>
+					'.$js.'
+					</script>';
+			return($sx);
+		}
+		/* Gerador de Token de Session */
 		function keyid()
 			{
 				global $secu;
@@ -94,6 +115,7 @@ class form
 				$this->key = $key;
 				return(md5($key));				
 			}
+		/* Gerador de Token de Formulario */
 		function keyid_form()
 			{
 				global $secu;
@@ -106,9 +128,56 @@ class form
 				return($key);				
 			}			
 		
+		/* Editar */
 		function editar($cp,$tabela,$post='')
 			{
 				global $dd,$acao,$path,$http;
+				
+				/* AJAX */
+				if ($this->ajax==1)
+					{
+						if (strlen($this->frame) == 0) { echo 'FRAME NAME NOT FOUND'; exit; }
+						
+						/* Mostra campos para o ajax */
+						$vars = ''; $data = ''; $ks = '';
+						for ($r=0;$r < (count($cp)+3); $r++)
+							{
+								
+								/* Novo */
+								$op = substr($cp[$r][0],0,2);
+								if ($op != '$O' and $op != '$Q')
+									{
+										$vars .= 'var ddv'.$r.' = $("#dd'.$r.'").val();'.chr(13).chr(10);		
+									} else {
+										$vars .= 'var ddv'.$r.' = $(\'#dd'.$r.' option:selected\').val();'.chr(13).chr(10);
+									}
+								if (strlen($data) > 0) { $data .= ', '; }
+								$data .= 'dd'.$r.': ddv'.$r.' ';								
+							}
+						$data .= ', dd91: \''.$this->form_name.'\', dd89: \''.$this->frame.'\', acao: \'gravar\' ';
+						
+						/* Inicia construcao do formulario */
+						
+						$sx = '';
+						$page = $http.'_ajax/ajax_form.php';
+						$sx .= '
+						<script>
+						var dd91 = \''.$this->form_name.'\';
+						function enviar_formulario(id)
+							{
+								'.$vars.'
+								var tela01 = $.ajax({
+										type: "POST",
+										url: \''.$page.'\',
+										data: { '.$data.'}
+										}) 
+										.done(function(data) { $("#'.$this->form_name.'_field").html(data); })
+										.fail(function() { alert("error"); });
+							}
+						</script>
+						';
+					}
+								
 				/* Local de salvamento dos dados */
 				if (strpos($tabela,':') > 0)
 					{
@@ -232,7 +301,7 @@ class form
 										}
 									}
 								
-								if ($fldk_value != $fldk_vlr)
+								if (($fldk_value != $fldk_vlr) and ($this->ajax==0))
 									{
 										$sx .= '<TR><TD colspan=2><font color="red">Try CSRF ingected (2)</font><BR>';
 										$this->saved = 0;
@@ -357,7 +426,7 @@ class form
 						}
 						$sql = $sql .' where '.$cp[0][1]."='".$dd[0]."'";
 					if (strlen($tabela) >0)
-						{ $result = db_query($sql) or die("<P><FONT COLOR=RED>ERR 002:Query failed : " . db_error()); }
+						{ $result = db_query($sql) or die("<P><FONT COLOR=RED>ERR 002:Query failed<HR>".$sql); }
 					$acao=null;
 					$saved=1;
 					}
@@ -397,7 +466,6 @@ class form
 				$i = UpperCaseSql(substr($cp[0],1,5));
 				if (strpos($i,' ') > 0) { $i = substr($i,0,strpos($i,' ')); }
 				$this->required = $cp[3];
-				$this->ajax = $cp[0];
 				$this->caption = $cp[2];
 				$this->fieldset = $cp[1];
 				$size = sonumero($cp[0]);
@@ -680,11 +748,22 @@ class form
 		 */	
 		function type_B()
 			{
+				global $dd, $cp;
+				if ($this->ajax == 0)
+				{
 				$sx = '
 				<input 
 					type="submit" name="acao" value="'.$this->caption.'" 
 					id="'.$this->name.'" class="'.$this->class_button_submit.'" />';
-				return($sx);
+				} else {
+					$sx = '
+					xx<input type="button"
+						value="'.$this->caption.'" 
+						name="acao"
+						class="'.$this->class_button_submit.'"
+						id="acao" onclick="enviar_formulario(\''.$this->total_cps.'\')" />';
+				} 
+				return($sx);				
 			}
 		/***
 		 * City
@@ -710,7 +789,7 @@ class form
 				/* Script dos estados */
 				$js = '';
 				$sx = '
-				<select name="'.$this->name.'" id="'.$this->name.'" size="1" '.$this->class.'>
+				<select name="'.$this->name.'" id="'.$this->name.'" size="1" 
 					'.$this->class.' 
 					id="'.$this->name.'" >';
 				$sx .= $opt.chr(13);
@@ -740,7 +819,7 @@ class form
 					$("#'.$this->name.'").mask("99/99/9999");
 					$("#'.$this->name.'").datepicker({
 							showOn: "button",
-							buttonImage: "'.$http.'include/img/icone_calender.gif",
+							buttonImage: "'.$include.'img/icone_calender.gif",
 							buttonImageOnly: true,
 							showAnim: "slideDown"	 
 					});
@@ -905,11 +984,8 @@ class form
 					$opt .= '</option>';
 				}
 				$sx = '
-				<select name="'.$this->name.'" size="1" clas"'.$this->class_select.'">
-				</select>
-				<select name="'.$this->name.'" size="1" clas"form_select">
-					'.$this->class.' 
-					id="'.$this->name.'" >';
+				<select id="'.$this->name.'" name="'.$this->name.'" size="1" 
+					class="'.$this->class_select.'">';
 				$sx .= $opt.chr(13);
 				$sx .= '</select>';
 				return($sx);
@@ -1064,12 +1140,12 @@ class form
 				global $LANG;
 
 				$estados = array("99"=>"Outside Brazil","AC"=>"Acre","AL"=>"Alagoas","AM"=>"Amazonas","AP"=>"Amap�",
-					"BA"=>"Bahia","CE"=>"Cear�","DF"=>"Distrito Federal","ES"=>"Esp�rito Santo",
-					"GO"=>"Goi�s","MA"=>"Maranh�o","MT"=>"Mato Grosso","MS"=>"Mato Grosso do Sul",
-					"MG"=>"Minas Gerais","PA"=>"Par�","PB"=>"Para�ba","PR"=>"Paran�",
-					"PE"=>"Pernambuco","PI"=>"Piau�","RJ"=>"Rio de Janeiro","RN"=>"Rio Grande do Norte",
-					"RO"=>"Rond�nia","RS"=>"Rio Grande do Sul","RR"=>"Roraima","SC"=>"Santa Catarina",
-					"SE"=>"Sergipe","SP"=>"S�o Paulo","TO"=>"Tocantins");
+					"BA"=>"Bahia","CE"=>"Ceara","DF"=>"Distrito Federal","ES"=>"Espirito Santo",
+					"GO"=>"Goias","MA"=>"Maranh�o","MT"=>"Mato Grosso","MS"=>"Mato Grosso do Sul",
+					"MG"=>"Minas Gerais","PA"=>"Par�","PB"=>"Paraiba","PR"=>"Parana",
+					"PE"=>"Pernambuco","PI"=>"Piaui","RJ"=>"Rio de Janeiro","RN"=>"Rio Grande do Norte",
+					"RO"=>"Rondonia","RS"=>"Rio Grande do Sul","RR"=>"Roraima","SC"=>"Santa Catarina",
+					"SE"=>"Sergipe","SP"=>"Sao Paulo","TO"=>"Tocantins");
 
 				$opt = '<option value="">'.msg('select_state').'</option>';
 				foreach (array_keys($estados) as $key=>$value) {
@@ -1123,7 +1199,7 @@ class form
 				if(!$arvore) { return ''; }
 				list($chv, $nome, $filhos) = $arvore;
 				if(strpos($chv, $tokenSepFormArvore) !== false){
-					die("ERRO: Chave inv�lida por cont�m separador de chaves: $chv");
+					die("ERRO: Chave invalida por contem separador de chaves: $chv");
 				}
 				if(!is_array($filhos) && !$filhos) { $filhos = array(); }
 				$strFilhos = "children: [";

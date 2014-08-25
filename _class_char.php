@@ -17,14 +17,21 @@ function nwin($link='',$w=200,$h=50,$resize=1,$scroll=0)
 
 function ShowLink($link,$tipo='0',$target='',$label='')
 	{
+		$path = '';	$filename = 'icone_link.png';
+		$fl = array('img/','../img/','../_include/img','_include/img');
+		for ($r=0;$r < count($fl);$r++)
+			{
+				if (file_exists($fl[$r].$filename)) { $path = $fl[$r]; }
+			}	
 		if (strlen($target) > 0) { $tag = ' target="'.$target.'"';}
 		if (strlen($link) ==0 ) { return(''); }
 		switch($tipo)
 			{
 			case '1':
 				$lk = '<A HREF="'.$link.'" title="'.$label.'" '.$tag.'>';
-				$lk .= '<img src="'.$path.'"icone_link.png" height="16" border="0">';
+				$lk .= '<img src="'.$path.'icone_link.png" height="16" border="0">';
 				$lk .= '</A>';
+				break;
 			default:
 				$lk = '<A HREF="'.$link.'" title="'.$label.'" '.$tag.'>';
 				$lk .= $link;

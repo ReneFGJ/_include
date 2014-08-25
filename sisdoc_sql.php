@@ -18,6 +18,7 @@
 // 0.0d                       20/05/2008 //
 // 0.0a                       25/02/2006 //
 ///////////////////////////////////////////
+if (!isset($mostar_versao)) { $mostar_versao = False; }
 if ($mostar_versao == True) { array_push($sis_versao,array("sisDOC (SQL)","0.0b",20080520)); }
 global $sql_query;
 
@@ -44,7 +45,7 @@ function pg_email_erro($serro)
 	$tee .= '<BR>Remote Address: '.$_SERVER['REMOTE_ADDR'];
 	$tee .= '<BR>Metodo: '.$_SERVER['REQUEST_METHOD'];
 	$tee .= '<BR>Nome da pagina: '.$_SERVER['SCRIPT_NAME'];
-	$tee .= '<BR>Dom�nio: '.$_SERVER['SERVER_NAME'];
+	$tee .= '<BR>Dominio: '.$_SERVER['SERVER_NAME'];
 	$tee .= '<BR>Data: '.date("d/m/Y H:i:s");
 	$tee .= '</table>';
 
@@ -85,12 +86,21 @@ function db_erro()
 	}
 function db_connect()
 	{
-	global $base_host, $base_port, $base_name ,$base_user, $base_pass, $base, $conn;
+	global $base_host, $base_port, $base_name ,$base_user, $base_pass, $base, $conn, $charset;
 	$RST = '';
 	if ($base=='pgsql')
 		{
 		$conn = "host=".$base_host." port=".$base_port." dbname=".$base_name." user=".$base_user." password=".$base_pass."";
 		$db = pg_connect($conn);
+		}
+		
+	if ($base=='mysqlPDO')
+		{
+		//$conn=mysql_connect($base_host,$base_user,$base_pass) or die ("Erro de Conexao !");
+		$txt = 'mysql:host='.$base_host.';dbname='.$base_name.';charset=utf8'; //.$charset;
+		$conn = new PDO($txt,$base_user,$base_pass);
+		//$banco=mysql_select_db(trim($base_name),$conn) or die ("Erro ao Selecionar o Banco !");
+		$RST = 'MYSQL';
 		}
 		
 	if ($base=='mysql')
@@ -117,9 +127,9 @@ function db_connect()
 	
 function db_query($rlt)
 	{
-	global $base,$debug,$sql_query;	
+	global $base,$debug,$sql_query,$conn;	
 	$sql_query = $rlt;
-
+	//echo $rlt;
 //	if (strlen($debug) > 0) { echo '<HR>'.$rlt; }
 	////////////////////////////// PostGre
 	if ($base=='pgsql')
@@ -128,6 +138,13 @@ function db_query($rlt)
 		{ $xxx = pg_query($rlt) or die('Erro de base <BR>' . pg_email_erro($rlt)); }
 		}
 	////////////////////////////// MySQL
+	if ($base=='mysqlPDO')
+		{
+		$xxx = $conn->query($rlt);
+		//if (strlen($debug) > 0) { $xxx = mysql_query($rlt) or die(mysql_error() . '<BR>'.$rlt); }
+		//else {  $xxx = mysql_query($rlt) or die('Erro de base'); }
+		}
+			
 	if ($base=='mysql')
 		{
 		if (strlen($debug) > 0) { $xxx = mysql_query($rlt) or die(mysql_error() . '<BR>'.$rlt); }
@@ -167,13 +184,17 @@ function sql_convert($sql)
 	}
 function db_read($rlt)
 	{
-	global $base;
+	global $base,$conn;
 	if ($base=='pgsql')
 		{ $xxx = pg_fetch_array($rlt); }
 	if ($base=='mysql')
 		{ $xxx = mysql_fetch_array($rlt); }
 	if ($base=='mssql')
 		{ $xxx = mssql_fetch_array($rlt); }
+	if ($base=='mysqlPDO')
+		{
+			$xxx = $rlt->fetch(PDO::FETCH_ASSOC);
+		}		
 	return($xxx);
 	}
 ?>
