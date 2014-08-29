@@ -218,10 +218,12 @@ class form
 				/**
 				 * Recupera informacoes do arquivo
 				 */
+				
 				if ((strlen($filename) > 0) and
 						($file == 1) and 
 						(strlen($acao)==0))
 							{
+								echo '#1#'; exit;
 								require($filename);
 								$recupera = 1;							
 							}
@@ -229,10 +231,12 @@ class form
 				/**
 				 * Processa
 				 */
+	 
 				$this->js_submit = '<script>';
 				if (strlen($post)==0) { $post = page(); }
 				$this->saved = 1;
 				$this->rq = '';
+				echo '<BR>'.date("Y-m-d H:i:s");	
 				$sx .= '<form id="'.$this->form_name.'" method="post" action="'.$post.'">'.chr(13);
 				$sh .= '<table class="'.$this->class_form_standard.'" width="100%">'.chr(13);
 				
@@ -251,8 +255,9 @@ class form
 						if (!(is_array($dd))) { $dd = array(); }
 						
 						$this->value = trim($dd[$r]);
+
 						$sx .= $this->process($cp[$r]);
-						
+ 
 						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0))
 							{
 								$keyc = md5($this->key);
@@ -266,6 +271,7 @@ class form
 
 						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0))
 							{
+								
 								$array = $_POST;
 								if (is_array($array))
 									{
@@ -279,19 +285,19 @@ class form
 								
 								$sz = round(count($fld));
 								$fldk = '';
-
+								
 								if ($sz > 0) 
 									{
-										for ($r=0;$r < count($fld);$r++)
+										for ($ry=0;$ry < count($fld);$ry++)
 										{
-										$flda = $fld[$r];
+										$flda = $fld[$ry];
 										if (!(is_array($flda)))
 											{
-											if (substr($fld[$r],0,2)=='tk')
-												{ $fldk = $fld[$r]; }
+											if (substr($fld[$ry],0,2)=='tk')
+												{ $fldk = $fld[$ry]; }
 											}								
 										}
-			
+										echo '<BR>FIM2-'.$sz.'-'.date("Y-m-d H:i:s"); 
 										if (strlen($fldk) > 0)
 										{
 											$fldk_value = substr($fldk,2,strlen($fldk));
@@ -321,7 +327,7 @@ class form
 				$sx .= chr(13).'</table>';
 				$sx .= '</form>';
 				$this->js_submit .= chr(13).'</script>';
-				
+
 				$sx .= $this->js;
 				$sx .= $this->js_submit;
 				
