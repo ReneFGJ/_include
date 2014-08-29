@@ -529,6 +529,9 @@ class form
 					
 					/* Date */
 					case 'DECLA':  $sx .= $this->type_DECLA(); break;
+					
+					/* Date */
+					case 'C':  $sx .= '<TR><TD colspan=2>'.$this->type_C() . $this->caption; break;					
 										
 					/* Date */
 					case 'D':  $sx .= $sh. $this->type_D(); break;
@@ -803,6 +806,24 @@ class form
 				return($sx);
 
 			}
+		/*********************************
+		 * Checkbox
+		 */
+		function type_C()
+			{
+				global $include,$acao,$http;
+				$sx = '
+				<input 
+					type="checkbox" name="'.$this->name.'" 
+					value = "1"
+					maxlength="10"  
+					id="'.$this->name.'"
+					'.$checked.' />&nbsp;';
+				$sx .= '&nbsp;';
+				
+				return($sx);				
+			}
+			
 			
 		/*********************************
 		 * Data
