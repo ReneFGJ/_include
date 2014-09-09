@@ -23,6 +23,7 @@
 // 0.0b                       28/08/2008 //
 // 0.0a                       20/05/2008 //
 ///////////////////////////////////////////
+if (!(is_set($mostar_versao))) { $mostar_versao = False; }
 if ($mostar_versao == True) { array_push($sis_versao,array("sisDOC (Char)","0.0a",20140720)); }
 
 if (strlen($include) == 0) { exit; }
