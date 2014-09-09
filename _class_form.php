@@ -236,9 +236,9 @@ class form
 				if (strlen($post)==0) { $post = page(); }
 				$this->saved = 1;
 				$this->rq = '';
-				echo '<BR>'.date("Y-m-d H:i:s");	
+				//echo '<BR>'.date("Y-m-d H:i:s");	
 				$sx .= '<form id="'.$this->form_name.'" method="post" action="'.$post.'">'.chr(13);
-				$sh .= '<table class="'.$this->class_form_standard.'" width="100%">'.chr(13);
+				$sh .= '<table class="'.$this->class_form_standard.'" width="100%" border=0>'.chr(13);
 				
 				for ($r=0;$r < count($cp);$r++)
 					{
@@ -297,7 +297,7 @@ class form
 												{ $fldk = $fld[$ry]; }
 											}								
 										}
-										echo '<BR>FIM2-'.$sz.'-'.date("Y-m-d H:i:s"); 
+										//echo '<BR>FIM2-'.$sz.'-'.date("Y-m-d H:i:s"); 
 										if (strlen($fldk) > 0)
 										{
 											$fldk_value = substr($fldk,2,strlen($fldk));
@@ -473,6 +473,7 @@ class form
 				if (strpos($i,' ') > 0) { $i = substr($i,0,strpos($i,' ')); }
 				$this->required = $cp[3];
 				$this->caption = $cp[2];
+				$this->caption_placeholder = troca($cp[2],'"','');
 				$this->fieldset = $cp[1];
 				$size = sonumero($cp[0]);
 				$this->maxlength = $size;
@@ -766,7 +767,7 @@ class form
 					id="'.$this->name.'" class="'.$this->class_button_submit.'" />';
 				} else {
 					$sx = '
-					xx<input type="button"
+					<input type="button"
 						value="'.$this->caption.'" 
 						name="acao"
 						class="'.$this->class_button_submit.'"
@@ -1033,6 +1034,7 @@ class form
 					maxlength="'.$this->maxlength.'" 
 					class="'.$this->class_string.'" 
 					id="'.$this->name.'"
+					placeholder="'.$this->caption_placeholder.'"
 					'.$this->readonly.' '.$style.'
 					 />'.chr(13);
 				$sx .= $this->requerido();
@@ -1077,7 +1079,8 @@ class form
 				<input 
 					type="password" name="'.$this->name.'" 
 					value = "'.$this->value.'"
-					maxlength="'.$this->maxlength.'" class="'.$this->class_password.'" '.$style.' 
+					maxlength="'.$this->maxlength.'" class="'.$this->class_password.'" '.$style.'
+					placeholder="'.$this->caption_placeholder.'" 
 					autocomplete="off"
 					id="'.$this->name.'" />'.chr(13);
 				$sx .= $this->requerido();

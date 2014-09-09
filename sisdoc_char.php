@@ -31,6 +31,20 @@ if (strlen($include) == 0) { exit; }
 /**/
 set_error_handler("customError"); 
 
+function email_restrition($s)
+	{
+		if (is_array($s)) { echo 'IS ARRAY'; exit; }
+		$valid = ' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_+';
+		$sr = '';
+		for ($r=0;$r < strlen($s);$r++)
+			{
+				$ch = trim(substr($s,$r,1));
+				if (strpos($valid,$ch) > 0)
+					{ $sr .= $ch; }
+			}
+		return($sr);
+	}
+
 function ShowLink($link,$tipo='0',$target='',$label='')
 	{
 		if (strlen($target) > 0) { $tag = ' target="'.$target.'"';}
@@ -320,8 +334,8 @@ function customError($errno, $errstr, $errfile, $errline, $errcontext)
 		$headers .= 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";		
 
-		mail($email, 'Erros de Script'.$secu, $tee, $headers);
-				
+		//mail($email, 'Erros de Script'.$secu, $tee, $headers);
+		echo $tee;	
 		die();
 		}
   } 

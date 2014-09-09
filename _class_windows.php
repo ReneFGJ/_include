@@ -7,15 +7,3 @@
  function newwin2(url) {  NewWindow=window.open(url,'newwin','scrollbars=yes,resizable=yes,width=690,height=450,top=10,left=10');  NewWindow.focus(); void(0);}
  function winclose() {  close(); }
 </script>
-
-<?
-function newwin($link,$szh=50,$szv=50)
-	{
-		if ($szh < 50) { $szh = 50; }
-		if ($szv < 20) { $szv = 20; }
-		$sx = '<A HREF="javascript:newxy3(';
-		$sx .= "'".$link."',".$szh.",".$szv.");";
-		$sx .= '">';
-		return($sx);
-	}
-?>
