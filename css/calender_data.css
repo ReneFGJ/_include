@@ -237,6 +237,8 @@ button.ui-button::-moz-focus-inner {
 }
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next {
+	text-decoration: none;
+	background-color: #FFFFFF;
 	position: absolute;
 	top: 2px;
 	width: 1.8em;

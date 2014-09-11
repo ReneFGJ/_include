@@ -7641,12 +7641,12 @@ function Datepicker() {
 	this.regional = []; // Available regional settings, indexed by language code
 	this.regional[""] = { // Default regional settings
 		closeText: "Done", // Display text for close link
-		prevText: "Prev", // Display text for previous month link
-		nextText: "Next", // Display text for next month link
+		prevText: "Anterior", // Display text for previous month link
+		nextText: "Proximo", // Display text for next month link
 		currentText: "Today", // Display text for current month link
 		monthNames: ["Janeiro","Fevereiro","Mar&ccedil;o","Abril","Maio","Junho",
 			"Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"], // Names of months for drop-down and formatting
-		monthNamesShort: ["Jan", "Feb", "Mar", "Abr", "Maio", "Jun", "Jul", "Aug", "Set", "Out", "Nov", "Dez"], // For formatting
+		monthNamesShort: ["Jan", "Feb", "Mar", "Abr", "Maio", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"], // For formatting
 		dayNames: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"], // For formatting
 		dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"], // For formatting
 		dayNamesMin: ["Dom","Seg","Ter","Qua","Qui","Sex","Sab"], // Column headings for days starting at Sunday

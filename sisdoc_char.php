@@ -9,20 +9,6 @@
 * @subpackage sisdoc_char
 */
 
-///////////////////////////////////////////
-// Versão atual           //    data     //
-//---------------------------------------//
-// v0.14.30                   20/07/2014 // ShowLink
-// v0.14.15					  12/04/2014 // FMT
-// v0.11.34					  23/08/2011 // charConv para acentos ISO
-// 0.0f                       06/07/2011 // SPlitX
-// 0.0e                       05/07/2011 // Mst_Hexa
-// 0.0d                       22/10/2010 // DV
-// 0.0d                       20/10/2010 // customError e chkmd5
-// 0.0c                       19/09/2010 // checkpost; checkform
-// 0.0b                       28/08/2008 //
-// 0.0a                       20/05/2008 //
-///////////////////////////////////////////
 if (!(isset($mostar_versao))) { $mostar_versao = False; }
 if ($mostar_versao == True) { array_push($sis_versao,array("sisDOC (Char)","0.0a",20140720)); }
 

@@ -12,8 +12,17 @@
 if(!isset($LANG) || $LANG == ''){ $LANG = 'pt_BR'; }
 
 echo '
+	<!--- Class Form -->
+	
+		<script type="text/javascript" src="'.$include.'js/jquery-ui.js"></script>
 		<script type="text/javascript" src="'.$include.'js/jquery.dynatree.js"></script>
-		<script type="text/javascript" src="'.$include.'js/jquery-calender_pt_BR.js"></script> 
+		<script type="text/javascript" src="'.$include.'js/jquery-calender_'.$LANG.'.js"></script>
+		<script language="JavaScript" type="text/javascript" src="'.$include.'js/jquery.maskedit.js"></script>
+		
+		<link href="'.$include.'css/calender_data.css" rel="stylesheet" type="text/css" id="skinSheet"> 
+		
+		
+		
 	';
 
 class form
@@ -1252,9 +1261,9 @@ class form
 				assert($arvore);
 				$arvoreExemplo = array('chaveRaiz', 'Natureza', array(
 									array(0,'Aranha',false),
-									array(1,'Mamï¿½feros', array(
+									array(1,'Mamíferos', array(
 											array(0, 'Coala', false),
-											array(1, 'Leï¿½o', false),
+											array(1, 'Leão', false),
 										)),
 								));
 			    $sel = '
