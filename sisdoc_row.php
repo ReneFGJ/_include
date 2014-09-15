@@ -1,29 +1,29 @@
 <?php
- /**
-  * Table Row
-  * @author Rene Faustino Gabriel Junior  (Analista-Desenvolvedor)
-  * @copyright Copyright (c) 2012 - sisDOC.com.br
-  * @access public
-  * @version v0.14.27
-  * @package Library SisDoc
-  * @subpackage Table Row
+/**
+ * Table Row
+ * @author Rene Faustino Gabriel Junior  (Analista-Desenvolvedor)
+ * @copyright Copyright (c) 2012 - sisDOC.com.br
+ * @access public
+ * @version v0.14.27
+ * @package Library SisDoc
+ * @subpackage Table Row
  */
- 
+
 global $secu;
 echo '
 <script language="javascript1.2">
 	img5=new Image();
-	img5.src="'.$include.'img/bt_clean.png";
+	img5.src="' . $include . 'img/bt_clean.png";
 	img6=new Image();
-	img6.src="'.$include.'img/bt_clean_on.png";
+	img6.src="' . $include . 'img/bt_clean_on.png";
 	img3=new Image();
-	img3.src="'.$include.'img/bt_busca.png";
+	img3.src="' . $include . 'img/bt_busca.png";
 	img4=new Image();
-	img4.src="'.$include.'img/bt_busca_on.png";
+	img4.src="' . $include . 'img/bt_busca_on.png";
 	img1=new Image();
-	img1.src="'.$include.'img/bt_novo.png";
+	img1.src="' . $include . 'img/bt_novo.png";
 	img2=new Image();
-	img2.src="'.$include.'img/bt_novo_on.png";
+	img2.src="' . $include . 'img/bt_novo_on.png";
 </script>
 
 <style>
@@ -117,7 +117,7 @@ if (strlen($http_redirect) > 0) {
 
 	if ($xline = db_read($xrlt)) { $total = $xline['total'];
 	}
-	for ($k = 0; $k <= intval($total/$offset); $k++) {
+	for ($k = 0; $k <= intval($total / $offset); $k++) {
 		$ini = $k * $offset + 1;
 		$fim = ($k + 1) * $offset;
 		if ($fim > $total) { $fim = $total;
@@ -186,15 +186,15 @@ if (strlen($http_redirect) > 0) {
 		$bt_filter_clear = 'Limpar filtro';
 		$bt_new = 'Novo';
 		$bt_search = 'Filtrar';
-		$cap_show = 'Mostrar';		
-		
+		$cap_show = 'Mostrar';
+
 		echo '<TABLE width="' . $tab_max . '" cellpadding="0" cellspacing="0" class="lt0" border="0" class="row_table">';
 		echo '<TR valign="top" >';
 
 		/* Formulário */
 		echo '<TD class="border_abnt"><form name="row" method="post" ';
 		echo 'action="' . $http_redirect . $http_redirect_para . '" ></TD>';
-		echo '<TD width="5" class="border_abnt"><NOBR>'.$bt_search.'</nobr></TD>';
+		echo '<TD width="5" class="border_abnt"><NOBR>' . $bt_search . '</nobr></TD>';
 		echo '<TD width="5" class="border_abnt">';
 		echo '<input type="text" name="dd1" value="' . $dd[1] . '" ';
 		echo 'size="15" maxlength="80" style="width: 130px; height: 22px;">';
@@ -205,7 +205,7 @@ if (strlen($http_redirect) > 0) {
 		echo 'onMouseOver="document.images[' . chr(39) . 'dd51' . chr(39) . '].src=img4.src;"';
 		echo 'onMouseOut="document.images[' . chr(39) . 'dd51' . chr(39) . '].src=img3.src;"';
 		echo '>';
-		echo '<input type="button" value="'.$bt_filter.'" name="dd51" class="row_button">';
+		echo '<input type="button" value="' . $bt_filter . '" name="dd51" class="row_button">';
 		echo '<input type="hidden" name="dd50" value="filtrar">';
 
 		/* Pesquisar em */
@@ -214,7 +214,7 @@ if (strlen($http_redirect) > 0) {
 		echo $cp_ed;
 		echo '</select>';
 		echo '<TD class="border_abnt">&nbsp;&nbsp;';
-		
+
 		/* Botão Limpar */
 		if ($clean == 1) {
 			echo '<TD width="5" class="border_abnt"><NOBR>';
@@ -222,12 +222,12 @@ if (strlen($http_redirect) > 0) {
 			echo 'onMouseOver="document.images[' . chr(39) . 'dd52' . chr(39) . '].src=img6.src;"';
 			echo 'onMouseOut="document.images[' . chr(39) . 'dd52' . chr(39) . '].src=img5.src;"';
 			echo '>';
-			echo '<input type="button" value="'.$bt_filter_clear.'" name="dd52" class="row">';
+			echo '<input type="button" value="' . $bt_filter_clear . '" name="dd52" class="row">';
 		}
 
 		/* Seleção mostrar */
-		echo '<TD width="5" align="right" class="border_abnt"><NOBR>'.$cap_show.'</nobr></TD>';
-		
+		echo '<TD width="5" align="right" class="border_abnt"><NOBR>' . $cap_show . '</nobr></TD>';
+
 		/* Close form */
 		echo '</form>';
 
@@ -252,7 +252,7 @@ if (strlen($http_redirect) > 0) {
 		}
 		if ($editar) {
 			echo '<TD align="right" class="border_abnt">';
-			echo '<input type="button" value="'.$bt_new.'" name="dd53" class="row" onclick="window.location = \''.$http_edit . $http_ch . $http_edit_para.'\';">';
+			echo '<input type="button" value="' . $bt_new . '" name="dd53" class="row" onclick="window.location = \'' . $http_edit . $http_ch . $http_edit_para . '\';">';
 		}
 
 		/* Barra final */
@@ -333,12 +333,133 @@ if (strlen($http_redirect) > 0) {
 		echo '</TABLE>';
 	}
 }
+
+function format_fld($zq1, $zq2) {
+	global $hd, $LANG;
+	$zqr = '';
+	if (strlen($zq2) > 0) {
+		if (substr($zq2, 0, 1) == '(') {
+			$zqr = substr($zq2, strpos($zq2, $zq1 . ':') + 2, 100);
+			//					echo '['.strpos($zq2,$zq1.':').']';
+			if (strpos($zqr, '&') > 0) { $zqr = substr($zqr, 0, strpos($zqr, '&'));
+			}
+			$zqr = $zq1 . '-' . $zqr;
+		}
+
+		////////////////////// $
+		if ($zq2 == '$') { $zqr = Number_format($zq1 / 100, 2);
+		}
+		////////////////////// $R
+		if (($zq2 == '$R') or ($zq2 == '2')) {
+			$zqr = Number_format($zq1, 2);
+			if ($LANG == 'en_US') { $zqr = $zqr;
+			}
+			if (($LANG == 'pt_BR') or ($zq2 == '2')) { $zqr = troca(troca(troca($zqr, '.', '#'), ',', '.'), '#', '.');
+			}
+		}
+		////////////////////// #
+		if (substr($zq2, 0, 1) == '#') { $zqr = '<CENTER>';
+			$zqr = $zqr . $zq1;
+		}
+		////////////////////// @
+		if ($zq2 == 'SHORT') {
+			$zqr = $zqr . SubStr($zq1, 0, 1) . LowerCase(SubStr($zq1, 1, strpos($zq1, ' ')));
+		}
+		if ($zq2 == '@') { $zqr = UpperCase(SubStr($zq1, 0, 1));
+			if (substr($zq1, 1, 1) == ' ') { $zqr = $zqr . '&nbsp;';
+			}
+			$zqr = $zqr . LowerCase(SubStr($zq1, 1, 200));
+		}
+		////////////////////// Bold
+		if ($zq2 == 'B')////// BOLD
+		{
+			$zqr = $zqr . '<B>' . $zq1 . '</B>';
+		}
+		////////////////////// CB
+		if ($zq2 == 'CB') { $varf = $vars[$varf];
+			$vvvt = '';
+			$vvvt = $vars['chk' . $zq1];
+			if ($vvvt == "1") { $vvvt = "checked";
+			}
+			$zqr = $zqr . '<input type="checkbox" name="chk' . $zq1 . '" ' . $vvvt . ' value="1">';
+		}
+		////////////////////// CEP
+		if ($zq2 == 'CEP')////// CEP
+		{
+			$xxcep = sonumero($zq1);
+			if (strlen($xxcep) == 8) { $xxcep = substr($xxcep, 0, 2) . '.' . substr($xxcep, 2, 3) . '-' . substr($xxcep, 5, 3);
+			}
+			$zqr = $zqr . $xxcep;
+		}
+		////////////////////// D
+		if ($zq2 == 'D') { $zqr = '<CENTER>';
+			$dta = trim($zq1);
+			if ($dta == '19000101') { $zqr = $zqr . '-';
+			} else { $zqr = $zqr . stodbr($zq1);
+			}
+		}
+		////////////////////// DR
+		if ($zq2 == 'DR') {
+			$zqr = '<CENTER>';
+			$dta = trim($zq1);
+			if ($dta == '19000101') { $zqr = $zqr . '-';
+			} else { $zqr = $zqr . substr(stodbr($zq1), 0, 5);
+			}
+		}
+		////////////////////// H
+		if ((substr($zq2, 0, 1) == 'H') and ($zq2 != 'H1') and ($zq2 != 'H2')) {
+			$zqr = '';
+			if ($hd != trim($zq1)) {
+				$zq1v = $zq1;
+				if (substr($zq2, 1, 1) == 'D') { $zq1v = stodbr($zq1);
+				}
+				//					$zqr .= '<TR><TD colspan="15" height="1" bgcolor="#c0c0c0"></TD></TR>';
+				$zqr .= '<TR><TD  bgcolor="#FFFFFF" colspan="15" class="lt2" align="left"><HR size="1"><B>' . $zq1v . '</TD></TR>';
+				$hd = trim($zq1);
+				$zqr = $zqr . '<TR ' . coluna() . '><TD></TD>';
+			}
+		}
+		if ($zq2 == 'H1')////// ENFATIZADO
+		{
+			$zqr = $zqr . '<h1>' . $zq1 . '</h1>';
+		}
+		if ($zq2 == 'H2')////// ENFATIZADO
+		{
+			$zqr = $zqr . '<h2>' . $zq1 . '</h2>';
+		}
+		////////////////////// Italic
+		if ($zq2 == 'I')////// ITALIC
+		{
+			$zqr = $zqr . '<I>' . $zq1 . '</I>';
+		}
+
+		if ($$zq2 == 'NL')////// Nova Linha
+		{
+			$zqr = $zqr . '<TR ' . $xcol . '><TD><TD>' . $linkv . $zq1;
+		}
+		if ($zq2 == 'SHORT') { $zqr = $zqr . LowerCase(SubStr($zq1, 1, strpos($zq1, ' ')));
+		}
+		////////////////////// SN
+		if ($zq2 == 'SN') {
+			$zqr = '<CENTER>';
+			$dta = trim($zq1);
+			if (($dta == '1') or ($dta == true) or ($dta == 'S')) { $zqr = $zqr . 'SIM';
+			} else { $zqr = $zqr . 'NAO';
+			}
+		}
+		if ($zq2 == 'Z') {
+			$zqr = '<CENTER>';
+			$zqr = $zqr . strzero($zq1, '0' . substr($zq2, 1, 2));
+		}
+	} else { $zqr = $zq1;
+	}
+	return ($zqr);
+}
 ?>
 <style>
-	.border_abnt
-		{
-			border-top: 1px solid #000000;
-			border-bottom: 1px solid #000000;
-			padding: 5px 0px 5px 0px;
-		}
+    .border_abnt {
+        border-top: 1px solid #000000;
+        border-bottom: 1px solid #000000;
+        padding: 5px 0px 5px 0px;
+    }
 </style>
