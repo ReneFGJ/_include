@@ -267,13 +267,14 @@ class form
 
 						$sx .= $this->process($cp[$r]);
  
-						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0))
+						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0) and ($this->ajax == ''))
 							{
+								echo '-->'.$this->ajax;
 								$keyc = md5($this->key);
 								if ($keyc != $this->value)
 									{
 									//if ($this->required_message_post == 1)
-										{ $sx .= '<TR><TD colspan=2><font color="red">Try CSRF ingected</font><BR>'; }
+										{ $sx .= '<TR><TD colspan=2><font color="red">Try CSRF (ingected)</font><BR>'; }
 									$this->saved = 0;
 									}
 							}
