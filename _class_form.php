@@ -267,7 +267,7 @@ class form
 
 						$sx .= $this->process($cp[$r]);
  
-						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0) and ($this->ajax == ''))
+						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0))
 							{
 								echo '-->'.$this->ajax;
 								$keyc = md5($this->key);
