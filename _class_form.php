@@ -61,6 +61,7 @@ class form
 		var $class_button_submit = '';
 		var $class_memo = '';
 		var $class_select = '';
+		var $class_select_option = '';
 
 	/* AJAX */
 	function ajax_refresh($id,$protocolo)
@@ -269,7 +270,6 @@ class form
  
 						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0))
 							{
-								echo '-->'.$this->ajax;
 								$keyc = md5($this->key);
 								if ($keyc != $this->value)
 									{
@@ -591,6 +591,11 @@ class form
 						$this->par = splitx(':',substr($cp[0],2,strlen($cp[0])));  
 						$sx .= $sh. $this->type_Q(); 
 						break;										
+					/* Radio box */
+					case 'R': 
+							$this->par = substr($cp[0],2,strlen($cp[0]));
+							$sx .= $sh. $this->type_R(); break;
+
 					/* String Simple */
 					case 'S':  $sx .= $sh. $this->type_S(); break;
 					/* String Simple */
@@ -703,14 +708,14 @@ class form
 						{
 							$sel = '';
 							if ($nnk==$txt) {$sel="selected";}
-							$sx= $sx . "<option value=\"".$nnk."\" ".$sel.">".$nnk."</OPTION>";
+							$sx= $sx . "<option value=\"".$nnk."\" ".$sel.' class="'.$this->class_select_option.'">'.$nnk."</OPTION>";
 						}
 					} else {
 						for ($nnk=round($par[1]);$nnk >= round($par[0]);$nnk--)
 						{
 							$sel = '';
 							if ($nnk==$txt) {$sel="selected";}
-							$sx= $sx . "<option value=\"".$nnk."\" ".$sel.">".$nnk."</OPTION>";
+							$sx= $sx . "<option value=\"".$nnk."\" ".$sel.' class="'.$this->class_select_option.'">'.$nnk."</OPTION>";
 						} 
 					}
 				$sx = $sx . "</select>" ;
@@ -802,7 +807,7 @@ class form
 					$opd = trim($line['pais_nome']);
 					if (trim($this->value)==$opv) { $check = 'selected'; }
 					$opt .= chr(13);
-					$opt .= '			<option value="'.$opv.'" '.$check.'>';
+					$opt .= '			<option value="'.$opv.'" '.$check.' class="'.$this->class_select_option.'">';
 					$opt .= $opd;
 					$opt .= '</option>';
 				}
@@ -876,8 +881,8 @@ class form
 				$sx .= '<BR><BR>';
 				$sx .= '
 				<select name="'.$this->name.'" >
-					<option value=""></option>
-					<option value="SIM">SIM</option>
+					<option value="" class="'.$this->class_select_option.'"></option>
+					<option value="SIM" class="'.$this->class_select_option.'">SIM</option>
 				</select>
 				, concordo.
 				';
@@ -1009,7 +1014,7 @@ class form
 			{
 				$sql = $this->par[2];
 				$rrr = db_query($sql);
-				$opt = '<option value="">'.msg('select_an_option').'</option>';
+				$opt = '<option value="" class="'.$this->class_select_option.'">'.msg('select_an_option').'</option>';
 				while ($line = db_read($rrr))
 				{
 					$check = '';
@@ -1017,7 +1022,7 @@ class form
 					$opv = trim($line[$this->par[1]]);
 					if ($this->value==$opv) { $check = 'selected'; }
 					$opt .= chr(13);
-					$opt .= '			<option value="'.$opv.'" '.$check.'>';
+					$opt .= '			<option value="'.$opv.'" '.$check.' class="'.$this->class_select_option.'">';
 					$opt .= $opd;
 					$opt .= '</option>';
 				}
@@ -1069,8 +1074,8 @@ class form
 						$vl = substr($so,0,strpos($so,':'));
 						if ($this->value==$vl) { $check = 'selected'; }
 						$sx .= '<option value="'.$vl.'" '.$check.' ';
-						if (strlen(trim($this->class_select)) > 0) 
-							{ $sx .= ' class="'.$this->class_select.'"'; }
+						if (strlen(trim($this->class_select_option)) > 0) 
+							{ $sx .= ' class="'.$this->class_select_option.'"'; }
 						$sx .= '>';
 						$sx .= trim(substr($so,strpos($so,':')+1,strlen($so)));
 						$sx .= '</option>'.chr(13);
@@ -1134,7 +1139,7 @@ class form
 				<TEXTAREA 
 					type="text" name="'.$this->name.'" size="'.$this->size.'"
 					cols="'.$this->cols.'"
-					rows="'.$this->rows.'" '.$this->class.' 
+					rows="'.$this->rows.'" class="'.$this->class_textarea.'" 
 					id="'.$this->name.'" />';
 				$sx .= $this->value;
 				$sx .= '</textarea>';
@@ -1252,10 +1257,10 @@ class form
 				return $saida;
 			}
 		/**
-		 * ï¿½rvore com checkboxes para seleï¿½ï¿½o
+		 * arvore com checkboxes para seleção
 		 * Aqui usando o dynatree: http://code.google.com/p/dynatree/
-		 * @param  array $arvore uma ï¿½rvore no formato ($chv, $nome, $filhos)
-		 * @return string        html/js de uma ï¿½rvore com checkboxes selecionï¿½veis
+		 * @param  array $arvore uma arvore no formato ($chv, $nome, $filhos)
+		 * @return string  html/js de uma ï¿½rvore com checkboxes selecionï¿½veis
 		 */
 		function type_ARV($arvore, $tokenSepFormArvore='%%')
 			{
@@ -1320,6 +1325,37 @@ class form
 
 				return $sel;
 			}
+
+		/**
+		 * Campo de Rich Text
+		 * TinyMCE: http://www.tinymce.com
+		 * @return string html/js de um campo com controles de texto rico
+		 */
+		function type_R()
+			{
+				$ops = splitx('&',$this->par);
+				for ($r=0;$r < count($ops);$r++)
+					{
+						$so = $ops[$r];
+						$check = '';
+						
+						$vl = substr($so,0,strpos($so,':'));
+						if ($this->value==$vl) { $check = 'selected'; }
+						$sx .= '<input type="radio" value="'.$vl.'" '.$check.' ';
+						$sx .= ' id="'.$this->name.'" name="'.$this->name.'" ';
+						if (strlen(trim($this->class_select_option)) > 0) 
+							{ $sx .= ' class="'.$this->class_select_option.'"'; }
+						$sx .= '>';
+						//$sx .= $ops[$r];
+						$txt = trim(substr($so,strpos($so,':')+1,strlen($so)));
+						if (substr($txt,0,1) == '#')
+							{ $txt = msg($txt); }
+						$sx .= $txt;
+					}
+				return($sx);
+				
+			}
+
 
 		/**
 		 * Campo de Rich Text
