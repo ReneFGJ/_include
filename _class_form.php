@@ -515,7 +515,6 @@ class form
 				
 				$sx .= chr(13).'<TR valign="top"><TD align="right">';
 				$sh .= $this->caption.'<TD>';
-				
 				switch ($i) 
 				{
 					/* Field Sets */
