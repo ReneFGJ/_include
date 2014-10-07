@@ -64,6 +64,10 @@ class form
 		var $class_select_option = '';
 
 	/* AJAX */
+	function ajax($id,$protocolo)
+		{
+		return($this->ajax_refresh($id, $protocolo));	
+		}
 	function ajax_refresh($id,$protocolo)
 		{
 			global $http;
@@ -74,7 +78,7 @@ class form
 				url: page,
 				data: { dd1: "'.$protocolo.'", dd91: "'.$id.'", dd2: "REFRESH" }
 			}).fail(function() {
-   					alert( "error" );
+   					alert( "error - " + page );
 			}).done(function( data ) {
 				$("#'.$id.'_main").html(data);
 			});			
