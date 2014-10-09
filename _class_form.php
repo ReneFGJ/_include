@@ -24,6 +24,15 @@ echo '
 		
 		
 	';
+	
+function sget($a1,$a2,$a3,$a4,$a5)
+	{
+		echo '<BR>a1='.$a1;
+		echo '<BR>a2='.$a2;
+		echo '<BR>a3='.$a3;
+		echo '<BR>a4='.$a4;
+		echo '<BR>a5='.$a5;	
+	}
 
 class form
 	{
@@ -49,6 +58,7 @@ class form
 		var $js_valida = '';
 		var $key;
 		var $ajax = '';
+		var $total_cps=0;
 		
 		var $required_message = 1;
 		var $required_message_post = 1;		
@@ -168,7 +178,7 @@ class form
 								if (strlen($data) > 0) { $data .= ', '; }
 								$data .= 'dd'.$r.': ddv'.$r.' ';								
 							}
-						$data .= ', dd91: \''.$this->form_name.'\', dd89: \''.$this->frame.'\', acao: \'gravar\' ';
+						$data .= ', dd91: \''.$this->frame.'\', dd89: \''.$this->frame.'\', acao: \'gravar\' ';
 						
 						/* Inicia construcao do formulario */
 						
@@ -176,22 +186,25 @@ class form
 						$page = $http.'_ajax/ajax_form.php';
 						$sx .= '
 						<script>
-						var dd91 = \''.$this->form_name.'\';
+						var dd91 = \''.$this->frame.'\';
 						function enviar_formulario(id)
 							{
 								'.$vars.'
+								/* alert("POST "+id + "'.$data.' - '.$this->frame.'"); */
 								var tela01 = $.ajax({
 										type: "POST",
 										url: \''.$page.'\',
 										data: { '.$data.'}
 										}) 
-										.done(function(data) { $("#'.$this->form_name.'_field").html(data); })
+										.done(function(data) { $("#'.$this->frame.'_main").html(data); })
 										.fail(function() { alert("error"); });
 							}
 						</script>
 						';
 					}
-								
+				
+				$this->total_cps = count($cp);
+							
 				/* Local de salvamento dos dados */
 				if (strpos($tabela,':') > 0)
 					{
@@ -549,7 +562,9 @@ class form
 										
 					/* Date */
 					case 'D':  $sx .= $sh. $this->type_D(); break;
-					/* Date */
+					/* EAN13 */
+					case 'EAN':  $sx .= $sh. $this->type_EAN(0); break;					
+					/* EMAIL */
 					case 'EMAIL':  $sx .= $sh. $this->type_EMAIL(0); break;					
 					case 'EMAIL_UNIQUE':  $sx .= $sh. $this->type_EMAIL(1); break;
 					/* Funcoes adicionais */
@@ -892,7 +907,37 @@ class form
 				$sx .= $this->requerido();
 				return($sx);				
 			}
-
+		/***
+		 * EAN13
+		 */			
+		function type_EAN()
+			{
+				$style = ' size="13" ';
+				$sx = '
+				<input 
+					type="text" name="'.$this->name.'" 
+					value = ""
+					maxlength="'.$this->maxlength.'" 
+					class="'.$this->class_string.'" 
+					id="'.$this->name.'"
+					placeholder="'.$this->caption_placeholder.'"
+					'.$this->readonly.' '.$style.'
+					 /> (CODE)'.chr(13);
+				$sx .= $this->requerido();
+				$sx .= '
+				<script>
+					$(\'#'.$this->name.'\').focus();
+					$(\'#'.$this->name.'\').keyup(function(e) {
+    				var enterKey = 13;
+    				if (e.which == enterKey){
+        				enviar_formulario(\''.$this->total_cps.'\');
+     				}
+ 					});
+				</script>				
+				';
+				
+				return($sx);
+			}
 		/***
 		 * String
 		 */			
@@ -1036,8 +1081,10 @@ class form
 				$sx .= '</select>';
 				return($sx);
 			}
-			
 		
+		
+			
+
 		/***
 		 * String
 		 */			
