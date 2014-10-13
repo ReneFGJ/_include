@@ -27,6 +27,7 @@ echo '
 	
 function gets($a1,$a2,$a3,$a4,$a5)
 	{
+		global $form;
 		echo '<BR>a1='.$a1;
 		echo '<BR>a2='.$a2;
 		echo '<BR>a3='.$a3;
@@ -35,8 +36,7 @@ function gets($a1,$a2,$a3,$a4,$a5)
 		echo '<BR>a6='.$a6;
 		echo '<BR>a7='.$a7;
 		echo '<HR>';
-		if ($a5 == 1) { $a5 = True; } else { $a5 = False; }
-		$form = new form;		
+		if ($a5 == 1) { $a5 = True; } else { $a5 = False; }		
 		$cp = array($a3,'',$a4,$a5,True); 
 		$sx = $form->process($cp);
 		return($sx);
