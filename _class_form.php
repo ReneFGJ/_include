@@ -25,13 +25,21 @@ echo '
 		
 	';
 	
-function sget($a1,$a2,$a3,$a4,$a5)
+function gets($a1,$a2,$a3,$a4,$a5)
 	{
 		echo '<BR>a1='.$a1;
 		echo '<BR>a2='.$a2;
 		echo '<BR>a3='.$a3;
 		echo '<BR>a4='.$a4;
 		echo '<BR>a5='.$a5;	
+		echo '<BR>a6='.$a6;
+		echo '<BR>a7='.$a7;
+		echo '<HR>';
+		if ($a5 == 1) { $a5 = True; } else { $a5 = False; }
+		$form = new form;		
+		$cp = array($a3,'',$a4,$a5,True); 
+		$sx = $form->process($cp);
+		return($sx);
 	}
 
 class form
@@ -576,7 +584,12 @@ class form
 						if ($this->par == '003') { $sx .= function_003(); }
 						if ($this->par == '004') { $sx .= function_004(); }
 						if ($this->par == '005') { $sx .= function_005(); }
-						if ($this->par == '006') { $sx .= function_006(); } 
+						if ($this->par == '006') { $sx .= function_006(); }
+						if ($this->par == '007') { $sx .= function_007(); }
+						if ($this->par == '008') { $sx .= function_008(); }
+						if ($this->par == '009') { $sx .= function_009(); }
+						if ($this->par == '010') { $sx .= function_010(); }
+						if ($this->par == '011') { $sx .= function_011(); } 
 						
 						break;		
 					/* Files */
@@ -1390,7 +1403,7 @@ class form
 						$check = '';
 						
 						$vl = substr($so,0,strpos($so,':'));
-						if ($this->value==$vl) { $check = 'selected'; }
+						if (trim($this->value)==trim($vl) ) { $check = 'checked'; }
 						$sx .= '<input type="radio" value="'.$vl.'" '.$check.' ';
 						$sx .= ' id="'.$this->name.'" name="'.$this->name.'" ';
 						if (strlen(trim($this->class_select_option)) > 0) 
