@@ -3,13 +3,13 @@
 * SQL Connections
 * @author Rene F. Gabriel Junior <rene@sisdoc.com.br>
 * @version 0.0i
-* @copyright Copyright � 2011, Rene F. Gabriel Junior.
+* @copyright Copyright - 2011, Rene F. Gabriel Junior.
 * @access public
 * @package Include
 * @subpackage SQL
 */
 ///////////////////////////////////////////
-// Vers�o atual           //    data     //
+// Versao atual           //    data     //
 //---------------------------------------//
 // 0.11.34                    23/08/2011 // Fun��o limit
 // 0.0G                       13/01/2011 // Fun��o tableexist

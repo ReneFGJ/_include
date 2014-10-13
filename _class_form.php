@@ -28,6 +28,7 @@ echo '
 function gets($a1,$a2,$a3,$a4,$a5)
 	{
 		global $form;
+		/*
 		echo '<BR>a1='.$a1;
 		echo '<BR>a2='.$a2;
 		echo '<BR>a3='.$a3;
@@ -36,8 +37,11 @@ function gets($a1,$a2,$a3,$a4,$a5)
 		echo '<BR>a6='.$a6;
 		echo '<BR>a7='.$a7;
 		echo '<HR>';
+		 */
 		if ($a5 == 1) { $a5 = True; } else { $a5 = False; }		
 		$cp = array($a3,'',$a4,$a5,True); 
+		$form->name = $a1;
+		$form->value = $a2;
 		$sx = $form->process($cp);
 		return($sx);
 	}
@@ -49,6 +53,7 @@ class form
 		var $maxlength = 10;
 		var $name='';
 		var $caption='';
+		var $caption_original='';
 		var $required=0;
 		var $rq = '';
 		var $readonly=0;	
@@ -273,7 +278,7 @@ class form
 				$this->rq = '';
 				//echo '<BR>'.date("Y-m-d H:i:s");	
 				$sx .= '<form id="'.$this->form_name.'" method="post" action="'.$post.'">'.chr(13);
-				$sh .= '<table class="'.$this->class_form_standard.'" width="100%" border=0>'.chr(13);
+				$sh .= '<table class="'.$this->class_form_standard.'" width="100%" border=0 >'.chr(13);
 				
 				for ($r=0;$r < count($cp);$r++)
 					{
@@ -504,10 +509,14 @@ class form
 			{
 				global $dd,$acao,$ged,$http;
 				
+				/* Caixa Alta */
 				$i = UpperCaseSql(substr($cp[0],1,5));
 				if (strpos($i,' ') > 0) { $i = substr($i,0,strpos($i,' ')); }
+				
+				/* Transfere parametros */
 				$this->required = $cp[3];
 				$this->caption = $cp[2];
+				$this->caption_original = $cp[2];
 				$this->caption_placeholder = troca($cp[2],'"','');
 				$this->fieldset = $cp[1];
 				$size = sonumero($cp[0]);
@@ -515,6 +524,7 @@ class form
 				$this->caption = $cp[2];
 				$ro = UpperCaseSql($cp[4]);
 				
+				/* Read Only */
 				if (($ro=='FALSE') or ($ro == '0')  or (strlen($ro) == '0'))
 					{
 						$this->readonly = ' READONLY ';		
@@ -538,8 +548,17 @@ class form
 				if ((substr($i,0,1)=='T') and ($i != 'TOKEN')) { $i = 'T'; }
 				if (substr($i,0,1)=='[') { $i = '['; }
 				
-				$sx .= chr(13).'<TR valign="top"><TD align="right">';
-				$sh .= $this->caption.'<TD>';
+				$sx .= chr(13).'<TR valign="top">';
+							
+				$sh = '<TD align="right">'.$this->caption.'<TD>';
+				if (strlen(trim($this->caption_original)) == 0)
+					{ $sh = '<TD colspan=2 align="left">'; }
+				if (substr($i,0,1)=='T')
+					{
+						$sh = '<TD colspan=2 align="left">';
+						$sh .= $this->caption; 
+					}
+
 				switch ($i) 
 				{
 					/* Field Sets */
@@ -558,20 +577,21 @@ class form
 					/* Alert */
 					case 'ALERT':  $sx .= '<TR><TD><TD colspan=1>'.$this->type_ALERT(); break;
 					/* Button */	
-					case 'B':  $sx .= '<TD>'.$this->type_B(); break;	
+					case 'B':  $sx .= '<TD colspan=2 >'.$this->type_B(); break;	
 					/* City, State, Country */
 					case 'CITY':  $sx .= $sh. $this->type_City(); break;
 					
-					/* Date */
+					/* Declaracao */
 					case 'DECLA':  $sx .= $this->type_DECLA(); break;
 					
-					/* Date */
+					/* Checkbox */
 					case 'C':  $sx .= '<TR><TD colspan=2>'.$this->type_C() . $this->caption; break;					
 										
 					/* Date */
 					case 'D':  $sx .= $sh. $this->type_D(); break;
 					/* EAN13 */
-					case 'EAN':  $sx .= $sh. $this->type_EAN(0); break;					
+					case 'EAN':  $sx .= $sh. $this->type_EAN(0); break;
+										
 					/* EMAIL */
 					case 'EMAIL':  $sx .= $sh. $this->type_EMAIL(0); break;					
 					case 'EMAIL_UNIQUE':  $sx .= $sh. $this->type_EMAIL(1); break;
@@ -614,7 +634,7 @@ class form
 					/* Options */
 					case 'O':  
 						$this->par = substr($cp[0],2,strlen($cp[0]));
-						$sx .= $sh. $this->type_O(); break;					
+						$sx .= $sh . $this->type_O(); break;					
 					/* String Simple */
 					case 'P':  $sx .= $sh. $this->type_P(); break;					
 					/* Query */
@@ -625,15 +645,15 @@ class form
 					/* Radio box */
 					case 'R': 
 							$this->par = substr($cp[0],2,strlen($cp[0]));
-							$sx .= $sh. $this->type_R(); break;
+							$sx .= '<TD colspan=2 >' . $this->caption.': '. $this->type_R(); break;
 
 					/* String Simple */
 					case 'S':  $sx .= $sh. $this->type_S(); break;
-					/* String Simple */
+					/* Text area */
 					case 'T':
 						$this->cols = sonumero(substr($cp[0],0,strpos($cp[0],':')));
 						$this->rows = sonumero(substr($cp[0],strpos($cp[0],':'),100));
-						$sx .= $sh. $this->type_T(); 
+						$sx .= $sh. '<TR><TD colspan=2>'. $this->type_T(); 
 						break;
 					/* String Simple */
 					case 'TOKEN':
@@ -776,12 +796,11 @@ class form
 				return($sx);
 			}
 		/**
-		 * Hidden
+		 * Header
 		 */	
 		function type_A()
 			{
 				$sx = '
-				<HR>
 				<h2>'.$this->caption.'</h2>				
 				';
 				return($sx);
@@ -809,12 +828,13 @@ class form
 				{
 				$sx = '
 				<input 
-					type="submit" name="acao" value="'.$this->caption.'" 
-					id="'.$this->name.'" class="'.$this->class_button_submit.'" />';
+					type="submit" name="acao" value="'.strip_tags($this->caption_original).'" 
+					id="'.$this->name.'" class="'.$this->class_button_submit.'" />
+					';
 				} else {
 					$sx = '
 					<input type="button"
-						value="'.$this->caption.'" 
+						value="'.$this->caption_original.'" 
 						name="acao"
 						class="'.$this->class_button_submit.'"
 						id="acao" onclick="enviar_formulario(\''.$this->total_cps.'\')" />';
@@ -986,7 +1006,7 @@ class form
 				$sx = '
 				<input 
 					type="hidden" name="'.$this->name.'" 
-					value="'.$this->caption.'" id="'.$this->name.'" />';
+					value="'.$this->caption_original.'" id="'.$this->name.'" />';
 				return($sx);
 			}
 

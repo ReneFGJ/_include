@@ -8,7 +8,15 @@
 	 * @package Library
 	 * @subpackage E-mail
     */
-    
+function enviaremail($a1='',$a2='',$a3='',$a4='',$a5='',$a6='',$a7='')
+	{
+		echo '<BR>A1='.$a1;
+		echo '<BR>A2='.$a2;
+		echo '<BR>A3='.$a3;
+		echo '<BR>A4='.$a4;
+		echo '<BR>A5='.$a5;
+		echo '<BR>A6='.$a6;
+	}   
 class email
 	{
 		var $user_email='';
@@ -270,5 +278,22 @@ class email
 			if ($chemail[strlen($chemail)-1] < 'a') { $xerr = false; }
 			return($xerr);
 			}			
+	}
+
+function checaemail($chemail)
+	{
+	$result = count_chars($chemail, 0);
+	if (($result[64] == 1)  and ($result[32] == 0) and ($result[32] == 0) and ($result[13] == 0) and ($result[10] == 0))
+		{
+		$xerr = True; 
+		
+		if (strpos($chemail,'!')) { $xerr = False; }
+		if (strpos($chemail,'@.')) { $xerr = False; }
+		}
+	else
+		{$xerr = False; }
+		
+	if ($chemail[strlen($chemail)-1] < 'a') { $xerr = false; }
+	return($xerr);
 	}
 	
