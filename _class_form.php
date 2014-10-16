@@ -177,7 +177,7 @@ class form
 						
 						/* Mostra campos para o ajax */
 						$vars = ''; $data = ''; $ks = '';
-						for ($r=0;$r < (count($cp)+3); $r++)
+						for ($r=0;$r < (count($cp)+2); $r++)
 							{
 								
 								/* Novo */
