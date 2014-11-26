@@ -6,6 +6,27 @@ class io {
 	var $up_month_control = 1;
 	var $filename;
 
+	/* Le diretorio */
+	function le_diretorio($dir, $ext = '') {
+		$diretorio = dir($dir);
+		$d = array();
+		while ($arquivo = $diretorio -> read()) {
+			$arq = $arquivo;
+			if (strlen($ext) > 0)
+				{
+					$ext2 = substr($arq,(strlen($arq)-strlen($ext)),strlen($ext)); 
+					if ($ext2 == $ext)
+						{
+							array_push($d,array($dir.$arquivo,$arquivo));		
+						}
+				} else {
+					array_push($d,array($dir.$arquivo,$arquivo));
+				}
+		}
+		$diretorio -> close();
+		return ($d);
+	}
+
 	/* Load file */
 	function loadfile($file, $method = 'L') {
 		if ($method == 'L') {
@@ -75,19 +96,16 @@ class io {
 				$compl = $dd[1] . '-' . substr(md5($nome . date("His")), 0, 5) . '-';
 				$compl = troca($compl, '/', '-');
 				$this -> filename = $path . $compl . $nome;
-				if (move_uploaded_file($temp, $path . $compl . $nome)) 
-				{
-					return(1);
-				} 
-				else 
-				{
+				if (move_uploaded_file($temp, $path . $compl . $nome)) {
+					return (1);
+				} else {
 					$sx = 'Erro de salvamento';
-					return(0); 
+					return (0);
 				}
 			} else {
 				echo '<center>' . msg($erro) . '</center>';
 			}
-			return(0);
+			return (0);
 
 		}
 	}
