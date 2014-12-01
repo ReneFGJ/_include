@@ -34,6 +34,32 @@ class io {
 		}
 		return ($sx);
 	}
+	
+	function load_file_curl($url)
+		{
+			$ch = curl_init();
+			curl_setopt ($ch, CURLOPT_URL, $url);
+			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+			$contents = curl_exec($ch);
+			if (curl_errno($ch)) {
+  				echo curl_error($ch);
+	 				echo "\n<br />";
+  				$contents = '';
+			} else {
+	 				curl_close($ch);
+			}
+			if (!is_string($contents) || !strlen($contents)) {
+				echo "Failed to get contents.";
+				$contents = '';
+			}
+			if (strpos($contents,'encoding="UTF-8"') > 0)
+				{
+					$contents = troca($contents,'encoding="UTF-8"','encoding="ISO-8859-1"');
+					$contents = utf8_decode($contents);
+				}
+			return($contents);				
+		}	
 
 	function load_file_local($file) {
 		$sx = '';
