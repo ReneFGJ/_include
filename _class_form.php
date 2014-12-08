@@ -663,7 +663,7 @@ class form
 					/* MEnsagens */
 					case 'M':  $sx .= $this->type_M(); break;
 					/* Valor com dias casas */
-					case 'N':  $sx .= $this->type_N(); break;
+					case 'N':  $sx .= $sh. $this->type_N(); break;
 					/* Options */
 					case 'O':  
 						$this->par = substr($cp[0],2,strlen($cp[0]));
