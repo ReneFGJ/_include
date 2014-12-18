@@ -111,6 +111,7 @@ class form
 		var $class_select = '';
 		var $class_select_option = '';
 		var $class_textarea = '';
+		var $class_field = '';
 
 	/* AJAX */
 	function ajax($id,$protocolo)
@@ -166,7 +167,10 @@ class form
 			{
 				global $secu;
 				$key = md5(microtime() . $secu . rand());
-				$keysid = trim($_SESSION['token_field']);
+				if (!(empty($_SESSION['token_field'])))
+					{ $keysid = trim($_SESSION['token_field']); } else {
+						{ $keyid = ''; }
+					}
 				$keys = trim($_SESSION['token']);
 				if (strlen($keys) > 0)
 					{
@@ -284,7 +288,7 @@ class form
 				/**
 				 * Recupera informacoes do arquivo
 				 */
-				
+				if (empty($filename)) { $filename = ''; }
 				if ((strlen($filename) > 0) and
 						($file == 1) and 
 						(strlen($acao)==0))
@@ -303,6 +307,8 @@ class form
 				$this->saved = 1;
 				$this->rq = '';
 				//echo '<BR>'.date("Y-m-d H:i:s");	
+				if (empty($sx)) { $sx = ''; }
+				if (empty($sh)) { $sh = ''; }
 				$sx .= '<form id="'.$this->form_name.'" method="post" action="'.$post.'">'.chr(13);
 				$sh .= '<table class="'.$this->class_form_standard.'" width="100%" border=0 >'.chr(13);
 				
@@ -310,8 +316,9 @@ class form
 					{
 						if ($recupera == 1) 
 							{
-								$fld = $cp[$r][1]; 
-								$dd[$r] = trim($this->line[$fld]);
+								$fld = $cp[$r][1];
+								if (!(empty($this->line[$fld])))
+									{ $dd[$r] = trim($this->line[$fld]); }
 								if (substr($cp[$r][0],0,2)=='$D')
 									{
 										$dd[$r] = stodbr($this->line[$fld]);		
@@ -580,6 +587,7 @@ class form
 				if ((substr($i,0,1)=='T') and ($i != 'TOKEN')) { $i = 'T'; }
 				if (substr($i,0,1)=='[') { $i = '['; }
 				
+				if (empty($sx)) { $sx = ''; }
 				$sx .= chr(13).'<TR valign="top">';
 							
 				$sh = '<TD align="right" width="10%">'.$this->caption.'<TD>';
@@ -719,7 +727,7 @@ class form
 					{ 
 					$vcol = 0;
 					$sx .= '<TR><TD colspan="2">';
-					$sx .= '<fieldset '.$this->class.'>';
+					$sx .= '<fieldset '.$this->fieldset.'>';
 					$sx .= '<legend><font class="lt1"><b>'.$this->caption.'</b></legend>';
 					$sx .= '<table cellpadding="0" cellspacing="0" class="lt2" width="100%">';
 					$sx .= '<TR valign="top">';
@@ -1382,7 +1390,7 @@ class form
 				return $saida;
 			}
 		/**
-		 * arvore com checkboxes para seleção
+		 * arvore com checkboxes para seleï¿½ï¿½o
 		 * Aqui usando o dynatree: http://code.google.com/p/dynatree/
 		 * @param  array $arvore uma arvore no formato ($chv, $nome, $filhos)
 		 * @return string  html/js de uma ï¿½rvore com checkboxes selecionï¿½veis
@@ -1392,9 +1400,9 @@ class form
 				assert($arvore);
 				$arvoreExemplo = array('chaveRaiz', 'Natureza', array(
 									array(0,'Aranha',false),
-									array(1,'Mamíferos', array(
+									array(1,'Mamï¿½feros', array(
 											array(0, 'Coala', false),
-											array(1, 'Leão', false),
+											array(1, 'Leï¿½o', false),
 										)),
 								));
 			    $sel = '
