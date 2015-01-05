@@ -9,6 +9,15 @@
  * @subpackage Table Row
  */
 
+if (!(function_exists('format_fld')))
+	{
+		function format_fld($x='',$y='')
+			{
+				return($x);
+			}
+	}
+ 
+ 
 global $secu;
 echo '
 <script language="javascript1.2">
@@ -333,6 +342,7 @@ if (strlen($http_redirect) > 0) {
 		echo '</TABLE>';
 	}
 }
+
 
 ?>
 <style>
