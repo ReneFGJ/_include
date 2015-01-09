@@ -14,6 +14,16 @@ function nwin($link='',$w=200,$h=50,$resize=1,$scroll=0)
 		$sx = 'onclick="NewWindow=window.open(\'.$link.\',\'newwin\',\'scrollbars=no,resizable=no,width='+$w+',height='+$h+',top=10,left=10\'); NewWindow.focus(); void(0);} "';
 		return($sx);
 	}
+	
+function numberformat($vlr,$nc)
+	{
+	$nv = number_format($vlr,$nc);
+	$nv = troca($nv,'.','#');
+	$nv = troca($nv,',','.');
+	$nv = troca($nv,'#',',');
+	if ($nv == '0,00') { $nv = '<CENTER>-</CENTER>'; }
+	return($nv);
+	}
 
 function ShowLink($link,$tipo='0',$target='',$label='')
 	{
