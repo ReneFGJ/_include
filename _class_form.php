@@ -126,7 +126,7 @@ class form
 			$.ajax({
 				type: "POST",
 				url: page,
-				data: { dd1: "'.$protocolo.'", dd91: "'.$id.'", dd2: "REFRESH" }
+				data: { dd1: "'.$protocolo.'", dd91: "'.$id.'", dd2: "REFRESH", dd95:"'.$edit.'" }
 			}).fail(function() {
    					alert( "error - " + page );
 			}).done(function( data ) {
