@@ -1,12 +1,11 @@
 <?php
 /**
- * @author Rene F. Gabriel Junior <rene@sisdoc.com.br>
- * @version 0.0i
- * @copyright Copyright - 2011, Rene F. Gabriel Junior.
- * @access public
- * @package Include
- * @subpackage Date
- */
+* @author Rene F. Gabriel Junior <rene@sisdoc.com.br>
+* @version 0.15.03
+* @access public
+* @package INCLUDEs
+* @subpackage Date
+*/
 ///////////////////////////////////////////
 // Vers�o atual           //    data     //
 //---------------------------------------//

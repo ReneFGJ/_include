@@ -1,13 +1,11 @@
 <?php
 /**
- * Table Row
- * @author Rene Faustino Gabriel Junior  (Analista-Desenvolvedor)
- * @copyright Copyright (c) 2012 - sisDOC.com.br
- * @access public
- * @version v0.14.27
- * @package Library SisDoc
- * @subpackage Table Row
- */
+* @author Rene F. Gabriel Junior <rene@sisdoc.com.br>
+* @version 0.15.03
+* @access public
+* @package INCLUDEs
+* @subpackage Table Row
+*/
 
 if (!(function_exists('format_fld')))
 	{

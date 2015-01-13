@@ -1,13 +1,11 @@
 <?
 /**
- * Esta classe � a respons�vel pela conex�o com o banco de dados.
- * @author Rene F. Gabriel Junior <rene@sisdoc.com.br>
- * @version 0.14.02
- * @copyright Copyright � 2011, Rene F. Gabriel Junior.
- * @access public
- * @package Library
- * @subpackage sisdoc_email
- */
+* @author Rene F. Gabriel Junior <rene@sisdoc.com.br>
+* @version 0.15.03
+* @access public
+* @package INCLUDEs
+* @subpackage E-mail
+*/
 ///////////////////////////////////////////
 // Vers�o atual           //    data     //
 //---------------------------------------//

@@ -1,13 +1,12 @@
 <?php
-    /**
-     * Header
-	 * @author Rene Faustino Gabriel Junior <renefgj@gmail.com> (Analista-Desenvolvedor)
-	 * @copyright Copyright (c) 2011 - sisDOC.com.br
-	 * @access public
-     * @version v0.15.01
-	 * @package Library
-	 * @subpackage Form
-    */
+ /**
+  * Header
+  * @author Rene Faustino Gabriel Junior <renefgj@gmail.com> (Analista-Desenvolvedor)
+  * @access public
+  * @version v0.15.01
+  * @package INCLUDEs 
+  * @subpackage Form
+  */
 
 if(!isset($LANG) || $LANG == ''){ $LANG = 'pt_BR'; }
 
