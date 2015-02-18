@@ -111,6 +111,7 @@ class form
 		var $class_select_option = '';
 		var $class_textarea = '';
 		var $class_field = '';
+		var $class_captcha = '';
 
 	/* AJAX */
 	function ajax($id,$protocolo)
@@ -333,6 +334,18 @@ class form
 						$this->value = trim($dd[$r]);
 
 						$sx .= $this->process($cp[$r]);
+						
+						if (($cp[$r][0] =='$CAPTCHA') and (strlen($acao) > 0))
+							{
+								$captcha = $_SESSION['form_captcha'];
+								if ($captcha != trim($dd[$r]))
+									{
+										$this->value = '';
+										echo 'erro';
+									} else {
+										echo 'ok';
+									}
+							}
  
 						if (($cp[$r][0]=='$TOKEN') and (strlen($acao) > 0))
 							{
@@ -629,6 +642,22 @@ class form
 					
 					/* Checkbox */
 					case 'C':  $sx .= '<TR><TD colspan=2>'.$this->type_C() . $this->caption; break;					
+
+					/* Checkbox */
+					case 'CAPTC':  $sx .= '<TR><TD><TD colspan=1>'. $this->caption . '<BR>' .
+									$this->type_captcha().'<BR>'; 
+								   $sx .= '
+									<input 
+										type="text" name="'.$this->name.'" 
+										value = ""
+										maxlength="8" 
+										class="'.$this->class_captcha.'" 
+										id="'.$this->name.'"
+										placeholder="'.$this->caption_placeholder.'"
+										'.$this->readonly.' '.$style.'
+					 					/>'.chr(13);
+									$sx .= $this->requerido();
+									break;					
 										
 					/* Date */
 					case 'D':  
@@ -934,10 +963,25 @@ class form
 				
 				return($sx);				
 			}
+
+		/****************************
+		 * Captha
+		 */
+		 function type_captcha()
+		 	{
+		 		global $include;
+				$sx = '';
+		 		$sx .= '<img src="'.$include.'/captcha.php">';
+				$sx .= '
+				<input 
+					type="hidden" name="'.$this->name.'" 
+					value="'.$this->value.'" id="'.$this->name.'" />';
+				return($sx);	
+		 	}
 			
 			
 		/*********************************
-		 * Data
+		 * Data / Fecha
 		 */
 		function type_D()
 			{
@@ -1368,105 +1412,7 @@ class form
 				return isset($cp[$this->indiceParams]) ? $cp[$this->indiceParams] : array();
 			}
 
-		/**
-		 * PRIVADO: Helper para type_ARV
-		 * @param  array   $arvore       	   uma �rvore no formato ($chv, $nome, $filhos)
-		 * @param  array   $chavesSelecionadas Chaves que ser�o selecionadas na inicializa��o
-		 * @param  boolean $expandirRaiz 	   Expande a visualiza��o da raiz por padr�o
-		 * @return string                	   a �rvore expandida no formato esperado pelo dynatree
-		 */
-		function _type_ARV_expande_arvore($arvore, $tokenSepFormArvore, $expandirRaiz=true)
-			{
-				if(!$arvore) { return ''; }
-				list($chv, $nome, $filhos) = $arvore;
-				if(strpos($chv, $tokenSepFormArvore) !== false){
-					die("ERRO: Chave invalida por contem separador de chaves: $chv");
-				}
-				if(!is_array($filhos) && !$filhos) { $filhos = array(); }
-				$strFilhos = "children: [";
-				foreach($filhos as $filho){
-					$strFilhos .= "\t".$this->_type_ARV_expande_arvore($filho, $tokenSepFormArvore, false)."\n";
-				}
-				$strFilhos .= "]";
-				$strExpandir = $expandirRaiz ? 'true' : 'false';
-				$saida = "{title: '$nome', key: '$chv', expand: $strExpandir, isFolder: ".($filhos ? "true, $strFilhos" : "false")."},\n";
-				return $saida;
-			}
-		/**
-		 * arvore com checkboxes para sele��o
-		 * Aqui usando o dynatree: http://code.google.com/p/dynatree/
-		 * @param  array $arvore uma arvore no formato ($chv, $nome, $filhos)
-		 * @return string  html/js de uma �rvore com checkboxes selecion�veis
-		 */
-		function type_ARV($arvore, $tokenSepFormArvore='%%')
-			{
-				assert($arvore);
-				$arvoreExemplo = array('chaveRaiz', 'Natureza', array(
-									array(0,'Aranha',false),
-									array(1,'Mamiferos', array(
-											array(0, 'Coala', false),
-											array(1, 'Le�o', false),
-										)),
-								));
-			    $sel = '
-			  	  	<!-- Add code to initialize the tree when the document is loaded: -->
-					<link href="css/dynatree/ui.dynatree.css" rel="stylesheet" type="text/css" id="skinSheet">
 
-				    <script type="text/javascript">
-				    $(function(){
-				        // Attach the dynatree widget to an existing <div id="tree"> element
-				        // and pass the tree options as an argument to the dynatree() function:
-				        $("#'.$this->name.'-tree").dynatree({
-				        	checkbox: true,
-				        	selectMode: 3,
-				            onActivate: function(node) {
-				                // A DynaTreeNode object is passed to the activation handler
-				                // Note: we also get this event, if persistence is on, and the page is reloaded.
-				                // alert("You activated " + node.data.title);
-				            },
-				            persist: false,
-				            children: [ // Pass an array of nodes.
-								'.$this->_type_ARV_expande_arvore($arvore, $tokenSepFormArvore).'
-				            ]
-				       });
-				';
-
-				// Persist�ncia de sele��o (entre POSTs, etc.)
-				$sel .= "
-						preSelecionar = {}; ";
-				if($this->value){
-					$chavesSelecionadas = 'preSelecionar[\''.implode('\'] = preSelecionar[\'', explode($tokenSepFormArvore, $this->value)).'\'] = true;'."\n";
-					$sel .= $chavesSelecionadas;
-				}
-
-				$sel .='
-						$("#'.$this->name.'-tree").dynatree("getRoot").visit(function(node){
-					        if(preSelecionar[node.data.key]) { node.select(true); }
-					    });
-				    });
-				    </script>
-				    <div id="'.$this->name.'-tree" style="width: 93%;"> </div>
-				    <input type="hidden" id="'.$this->name.'" name="'.$this->name.'" />
-    			';
-
-    			$this->jsOnSubmit .= '
-	    			var tree = $("#'.$this->name.'-tree").dynatree("getTree");
-	      			selRootNodes = tree.getSelectedNodes(true);
-	      			var selRootKeys = $.map(selRootNodes, function(node){
-			          return node.data.key;
-			        });
-
-    				$("#'.$this->name.'").val(selRootKeys.join("'.$tokenSepFormArvore.'"));    				
-    			'; 
-
-				return $sel;
-			}
-
-		/**
-		 * Campo de Rich Text
-		 * TinyMCE: http://www.tinymce.com
-		 * @return string html/js de um campo com controles de texto rico
-		 */
 		function type_R()
 			{
 				$ops = splitx('&',$this->par);
@@ -1491,154 +1437,5 @@ class form
 				return($sx);
 				
 			}
-
-
-		/**
-		 * Campo de Rich Text
-		 * TinyMCE: http://www.tinymce.com
-		 * @return string html/js de um campo com controles de texto rico
-		 */
-		function type_RT()
-			{
-				$conteudo = $this->value;
-
-				if($this->geradorCampoRichText === 'tinymce'){
-					$conteudo = htmlspecialchars($this->value, ENT_QUOTES);
-					$height = 400;
-					return '
-						<script type="text/javascript">
-						tinymce.init({
-						    selector: "textarea.tinymce_'.$this->name.'",
-						    language: "pt_BR",
-						    menubar: false,
-						    statusbar: false,
-						    plugins: "textcolor paste link",
-						    height: '.$height.',
-						    toolbar: "bold italic underline | alignleft aligncenter alignright | bullist | forecolor | link | formatselect fontsizeselect | removeformat",
-						    
-						    paste_text_sticky_default: true,
-						    paste_text_sticky: true,
-
-						    valid_elements: "a[href],p[style],b[style],i[style],u[style],del[style],h1[style],h2[style],h3[style],h4[style],h5[style],h6[style],ul,li,br,span[style]",
-
-						    formats: {
-						        bold : {inline : "b" },  
-						        italic : {inline : "i" },
-						        underline : {inline : "u"},
-						        strikethrough: {inline: "del"},
-						        
-						    },
-						 });
-						</script>
-
-						<div style="width: 93%;">
-							<textarea name="'.$this->name.'" id="'.$this->name.'" class="tinymce_'.$this->name.'" style="height:'.($height+35).'px; min-width:700px">'.$conteudo.'</textarea>
-						</div>
-					';
-				}
-
-				die('Tipo de gerador de campo nao suportado: '.$this->geradorCampoRichText);
-			}
-
-		/**
-		 * Campo de sele��o de tags com autocomplete
-		 * http://jqueryui.com/autocomplete/#multiple-remote
-		 * @param  string $fonteDados    -Se for uma string, � tradada como uma URL que retorna uma lista de dados
-		 *                                 no formato JSON (objetos com atributos 'label' e 'value')
-		 *                               -Se for um array, � tratada como uma lista de tags 
-		 * @return string                Um campo com autocomplete
-		 */
-		function type_ATAGS($fonteDados)
-			{
-				if(is_array($fonteDados)){
-					foreach($fonteDados as $tag){
-						if(!preg_match('/^[#_a-z][_a-z0-9]*$/', $tag)){
-							die('ERRO type_ATAGS(): Apenas tags alfanum�ricas min�sculas (sem acentos) come�adas com uma letra ou cerquilha (#) s�o suportadas.');
-						}
-					}
-					if(count($fonteDados) == 0){ $jsTags = '[]'; }
-					else{ $jsTags = '["'.implode('", "', $fonteDados).'"]'; }
-
-					$jsAutocompleteSource = '
-						function( request, response ) {
-							var availableTags = '.$jsTags.';
-							// delegate back to autocomplete, but extract the last term
-							response( $.ui.autocomplete.filter(
-								availableTags, extractLast( request.term ) ) );
-						}
-					';
-				}
-				elseif(is_string($fonteDados) && preg_match('/^[^ ]+$/', strtolower($fonteDados))){
-					//XXX n�o testado!
-					$jsAutocompleteSource = '
-						function( request, response ) {
-							$.getJSON( "'.$fonteDados.'", {
-								term: extractLast( request.term )
-							}, response );
-						}
-					';
-				}
-				else{
-					var_dump($fonteDados);	
-					die('ERRO type_ATAGS(): Fonte de dados inv�lida, vazia ou n�o suportada.');
-				}
-
-				return '
-					  <script>
-
-						$(function() {
-							function split( val ) {
-								return val.split( /,\s*/ );
-							}
-							function extractLast( term ) {
-								return split( term ).pop();
-							}
-
-							$( "#'.$this->name.'" )
-								// don\'t navigate away from the field on tab when selecting an item
-								.bind( "keydown", function( event ) {
-									if ( event.keyCode === $.ui.keyCode.TAB &&
-											$( this ).data( "ui-autocomplete" ).menu.active ) {
-										event.preventDefault();
-									}
-								})
-								.autocomplete({
-									source: '.$jsAutocompleteSource.'
-									,
-									search: function() {
-										// custom minLength
-										var term = extractLast( this.value );
-										if ( term.length < 2 ) {
-											return false;
-										}
-									},
-									focus: function() {
-										// prevent value inserted on focus
-										return false;
-									},
-									select: function( event, ui ) {
-										var terms = split( this.value );
-										// remove the current input
-										terms.pop();
-										// add the selected item
-										terms.push( ui.item.value );
-										// add placeholder to get the comma-and-space at the end
-										terms.push( "" );
-										this.value = terms.join( ", " );
-										return false;
-									}
-								});
-						});	
-					  </script>
-					<input 
-						id="'.$this->name.'" 
-						name="'.$this->name.'" 
-						value="'.$this->value.'" 
-						size="'.$this->size.'"
-						'.($this->size > 70 ? 'style="width: 90%;"' : '').'
-					>
-				';
-				//return '<input id="'.$this->name.'" type="text" style="width: 90%;" size="70" maxlength="120" value="'.$this->value.'" name="'.$this->name.'"></input>';
-			}	
 	}
 ?>
