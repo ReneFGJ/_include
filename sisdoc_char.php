@@ -320,6 +320,11 @@ function redirecina($pg)
 	header("Location: ".$pg);
 	echo 'Stoped'; exit;
 	}
+function redireciona($pg)
+	{
+	header("Location: ".$pg);
+	echo 'Stoped'; exit;
+	}	
 function numberformat($vlr,$nc)
 	{
 	$nv = number_format($vlr,$nc);
