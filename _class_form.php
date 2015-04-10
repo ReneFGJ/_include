@@ -48,6 +48,8 @@ if (!(function_exists("cpf")))
 			{ return(false); }
 		}
 	}
+if (!(function_exists("gets")))
+	{	
 function gets($a1,$a2,$a3,$a4,$a5)
 	{
 		global $form;
@@ -69,7 +71,7 @@ function gets($a1,$a2,$a3,$a4,$a5)
 		$sx = $form->process($cp);
 		return($sx);
 	}
-
+	}
 class form
 	{
 		/* Standard Fields */
@@ -326,6 +328,10 @@ class form
 									{
 										$dd[$r] = stodbr($this->line[$fld]);		
 									} 
+								if (substr($cp[$r][0],0,2)=='$N')
+									{
+										$dd[$r] = number_format($this->line[$fld],2,'.','');		
+									} 									
 							}
 													
 						$this->name = 'dd'.$r;
@@ -515,6 +521,10 @@ class form
 								if (substr($cp[$k][0],0,2) == '$D') 
 									{
 								 		$dd[$k] = brtos($dd[$k]); 
+									}
+								if (substr($cp[$k][0],0,2) == '$N') 
+									{
+								 		$dd[$k] = troca($dd[$k],',','.'); 
 									}
 								$sql = $sql . $cp[$k][1].'='.chr(39).$dd[$k].chr(39).' ';
 							}
@@ -1164,6 +1174,7 @@ class form
 					value = "'.$this->value.'"
 					maxlength="15" '.$this->class.' 
 					id="'.$this->name.'"
+					style="text-align: right;"
 					'.$msk.' />&nbsp;';
 				
 				/* SCRIPT */
