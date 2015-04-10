@@ -1169,7 +1169,7 @@ class form
 				/* SCRIPT */
 				$gets = '
 				<script>
-					$("#'.$this->name.'").maskMoney();
+					$("#'.$this->name.'").maskMoney({thousands:\'\', decimal:\'.\'});
 				</script>
 				';
 				$this->js .= $gets;
