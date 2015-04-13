@@ -1140,6 +1140,7 @@ class form
 					maxlength="15" '.$this->class.' 
 					class="'.$this->class_string.'"
 					id="'.$this->name.'"
+					style="text-align: right;"
 					'.$msk.' />&nbsp;';
 				
 				/* SCRIPT */
@@ -1172,7 +1173,8 @@ class form
 				<input 
 					type="text" name="'.$this->name.'" size="18"
 					value = "'.$this->value.'"
-					maxlength="15" '.$this->class.' 
+					maxlength="15" '.$this->class.'
+					class="'.$this->class_string.'" 
 					id="'.$this->name.'"
 					style="text-align: right;"
 					'.$msk.' />&nbsp;';

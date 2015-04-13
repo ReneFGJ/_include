@@ -53,6 +53,12 @@ function nocr($text)
 		$text = troca($text,'¢¢¢',' ');
 		return($text);
 	}
+	
+function msg_erro($msg_erro,$stop=0)
+	{
+		echo '<h1 class="dd_erro">'.$msg_erro.'</h1>';
+		if ($stop==1) { exit; }
+	}
 
 /** 
 * Função para formatar número
