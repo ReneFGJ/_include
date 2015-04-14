@@ -104,7 +104,7 @@ function db_connect()
 	if ($base=='mysql')
 		{
 		$conn=mysql_connect($base_host,$base_user,$base_pass) or die ("Erro de Conexao !");
-		$banco=mysql_select_db(trim($base_name),$conn) or die ("Erro ao Selecionar o Banco !");
+		$banco=mysql_select_db(trim($base_name),$conn) or die ("Erro ao Selecionar o Banco ".$base_name." no servidor ".$base_host."!");
 		$RST = 'MYSQL';
 		}
 		
