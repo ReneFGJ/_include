@@ -32,7 +32,7 @@ if (strlen($include) == 0) { exit ;
 set_error_handler("customError");
 
 function Format_name($x) {
-	$x = ucwords(strtolower(htmlentities($x)));
+	$x = ucwords(strtolower($x));
 	$x = troca($x, ' E ', ' e ');
 	$x = troca($x, ' DA ', ' da ');
 	$x = troca($x, ' DE ', ' de ');
