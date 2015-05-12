@@ -31,6 +31,30 @@ if (strlen($include) == 0) { exit ;
 /**/
 set_error_handler("customError");
 
+//####################################################################################
+//**************************** Inicio do metodo **************************************
+/* @function: tratar_nome($var)
+ *           Faz tratamento de nome proprio
+ * @date: 04/05/2015
+ */
+function tratar_nome($nome) {
+	$nome = strtolower($nome);
+	// Converter o nome(campo) todo para minúsculo
+	$nome = explode(" ", $nome);
+	// Separa todo o nome(campo) por espaços
+	for ($i = 0; $i < count($nome); $i++) {
+		// Tratar cada palavra do nome(campo)
+		if ($nome[$i] == "de" or $nome[$i] == "da" or $nome[$i] == "e" or $nome[$i] == "dos" or $nome[$i] == "do") {
+			$saida .= $nome[$i] . ' ';
+			// Se a palavra estiver dentro das complementares mostrar toda em minúsculo
+		} else {
+			$saida .= ucfirst($nome[$i]) . ' ';
+			// Se for um nome, mostrar a primeira letra maiúscula
+		}
+	}
+	return $saida;
+}
+
 function Format_name($x) {
 	$x = ucwords(strtolower($x));
 	$x = troca($x, ' E ', ' e ');
@@ -104,10 +128,10 @@ function url_exists($url) {
 }
 
 ////////////////////////////////////////
-function fmt($zq1,$zq2=2)
-	{
-		return(format_fld($zq1, $zq2));
-	}
+function fmt($zq1, $zq2 = 2) {
+	return (format_fld($zq1, $zq2));
+}
+
 function format_fld($zq1, $zq2) {
 	global $hd, $LANG;
 	$zqr = '';
