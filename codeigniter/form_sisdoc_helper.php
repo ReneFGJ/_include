@@ -80,6 +80,12 @@ function brtos($data) {
 	return ($data);
 }
 
+function brtod($data) {
+	$data = sonumero($data);
+	$data = substr($data, 4, 4) . '-'.substr($data, 2, 2) . '-'.substr($data, 0, 2);
+	return ($data);
+}
+
 function strzero($ddx, $ttz) {
 	$ddx = round($ddx);
 	while (strlen($ddx) < $ttz) { $ddx = "0" . $ddx;
@@ -669,27 +675,16 @@ function npag($obj, $npage = 1, $tot = 10, $offset = 20) {
 	$sx .= form_hidden('dd2', 'search');
 
 	$sx .= form_submit('acao', 'busca');
-	$sx .= form_close();
-	$sx .= '
-	</li>
-	';
-
-	$sx .= '
-	<li style="width: 50px; border: 0px solid #FFFFFF;">
-		<nobr>
-			';
-	$sx .= form_open();
-	$data = array('name' => 'dd2', 'id' => 'dd1', 'dd9' => 'clean');
-	$sx .= form_hidden($data);
 	$sx .= form_submit('acao', 'limpa filtro');
+	if ($obj->novo == true)
+		{
+		$sx .= form_submit('acao', 'novo');
+		}
 	$sx .= form_close();
 	$sx .= '
 	</li>
 	';
-	$sx .= '
-</ul>
-';
-
+	$sx .= '</ul>';
 	return ($sx);
 }
 
@@ -737,7 +732,17 @@ if (!function_exists('form_edit')) {
 		/* POST */
 		$post = $CI -> input -> post();
 		$dd = $post;
-
+		$acao = $CI->input->post("acao");
+		
+		if ($acao == 'novo')
+			{
+				redirect($obj->row_edit.'/0/0');
+				exit;
+			}
+		if ($acao == 'limpa filtro')
+			{
+			$CI -> session -> userdata['row_termo'] = '';
+			}
 		$acao = '';
 		$term = '';
 		if (isset($post)) {
@@ -747,7 +752,7 @@ if (!function_exists('form_edit')) {
 			}
 			$term = troca($term, "'", "´");
 		}
-
+		
 		$fd = $obj -> fd;
 		$mk = $obj -> mk;
 		$lb = $obj -> lb;
@@ -759,10 +764,7 @@ if (!function_exists('form_edit')) {
 		/* campo ID */
 		$fld = $fd[0];
 
-		$sh = '
-<thead>
-	<tr>
-		';
+		$sh = '<thead><tr>';
 		for ($r = 1; $r < count($fd); $r++) {
 			$label = $lb[$r];
 			$sh .= '<th>' . $label . '</th>';
@@ -1215,6 +1217,8 @@ if (!function_exists('form_edit')) {
 		}
 		if (substr($type, 0, 3) == '$HV') { $tt = 'HV';
 		}
+		if (substr($type, 0, 5) == '$LINK') { $tt = 'LINK';
+		}		
 
 		/* form */
 		$max = 100;
@@ -1227,12 +1231,8 @@ if (!function_exists('form_edit')) {
 			$tdl = '<td align="right">';
 			$tdn = '</td>';
 
-			$tr = '
-<tr valign="top">
-	';
-			$trn = '
-</tr>
-';
+			$tr = '<tr valign="top">';
+			$trn = '</tr>';
 		} else {
 			$td = '';
 			$tdl = '';
@@ -1471,6 +1471,25 @@ if (!function_exists('form_edit')) {
 				  </script>
 				';
 				break;
+				
+			/* String */
+			case 'LINK' :
+				/* TR da tabela */
+				$tela .= $tr;
+
+				/* label */
+				if (strlen($label) > 0) {
+					$tela .= $tdl . $label . ' ';
+				}
+				if ($required == 1) { $tela .= ' <font color="red">*</font> ';
+				}
+
+				$dados = array('name' => $dn, 'id' => $dn, 'value' => $vlr, 'maxlenght' => $max, 'size' => $size, 'placeholder' => $label, 'class' => 'form_string');
+				if ($readonly == false) { $dados['readonly'] = 'readonly';
+				}
+				$tela .= $td . form_input($dados);
+				$tela .= $tdn . $trn;
+				break;				
 
 			case 'M' :
 				/* TR da tabela */
