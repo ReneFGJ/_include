@@ -237,7 +237,7 @@ function mst_autor($autor,$tp)
 							if ($btautor == '[ICV]') { $bmautor = "ICV"; }
 							if (strlen($btautor.$bmautor) > 0)
 								{
-								$autor = $autor . ($qk+1).' '.substr($ntautor,0,strpos($ntautor,';')-1);
+								$autor = $autor . ($qk+1).' '.substr($ntautor,0,strpos($ntautor,';'));
 								$autor = $autor . $bmautor;
 								}
 							} else {

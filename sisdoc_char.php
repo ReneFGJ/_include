@@ -350,7 +350,7 @@ function customError($errno, $errstr, $errfile, $errline, $errcontext) {
 		$headers .= 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 
-		mail($email, 'Erros de Script' . $secu, $tee, $headers);
+		//mail($email, 'Erros de Script' . $secu, $tee, $headers);
 
 		die();
 	}

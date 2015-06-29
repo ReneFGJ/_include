@@ -17,15 +17,15 @@ function checadata(vDateName)
     var iMonth = parseInt(mMonth, 10)
     var iYear  = parseInt(mYear, 10)
     if ((iMonth < 1) || (iMonth > 12)) 
-		{ alert("Mes Inv�lido");ok=0;}
+		{ alert("Mes Invalido");ok=0;}
     if (((iYear < 1900) || (iYear > 2050)) && (ok==1))
 		{ alert("Ano Inv�lido");ok=0;}
     if (((iDay < 1 ) || (iDay > 31))  && (ok==1))
-		{ alert("Dia Inv�lido");ok=0;}
+		{ alert("Dia Invalido");ok=0;}
     if ((iDay==31 ) && (ok==1))
 		{
 		if ((iMonth==2) || (iMonth==4) || (iMonth==6) || (iMonth==9) || (iMonth==11))
-			{alert("FEV/ABR/JUN/SET e NOV n�o tem 31 dias ");ok=0;}
+			{alert("FEV/ABR/JUN/SET e NOV nao tem 31 dias ");ok=0;}
 		}
 	if ((iDay > 29) && (iMonth==2))
 		{	alert('Fevereiro tem somente 28/29 dias');
