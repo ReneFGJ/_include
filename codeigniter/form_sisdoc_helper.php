@@ -93,6 +93,18 @@ function strzero($ddx, $ttz) {
 	return ($ddx);
 }
 
+function meses($id=0)
+	{
+		$mes = array('','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro');
+		$id = round($id);
+		return($mes[$id]);
+	}
+
+function meses_short()
+	{
+		$mes = array('','Jan.','Fev.','Mar.','Abr.','Maio','Jun.','Jul.','Ago.','Set.','Out.','Nov.','Dez.');
+	}
+
 function UpperCase($d) {
 	$d = strtoupper($d);
 
